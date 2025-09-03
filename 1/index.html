@@ -4,28 +4,53 @@
   <title>Project 1</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Segoe UI", Arial, sans-serif;
       margin: 30px;
       line-height: 1.6;
-      background-color: #fafafa;
+      background-color: #fdfdfd;
       color: #333;
     }
+
     h1 {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      font-size: 2.2em;
+      color: #222;
+      letter-spacing: 1px;
     }
+
     h2 {
       margin-top: 40px;
-      color: #444;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 5px;
+      padding-left: 12px;
+      font-size: 1.5em;
+      font-weight: 600;
+      color: #005fa3;
+      border-left: 6px solid #007acc;
+      background: linear-gradient(to right, #f0f8ff, #ffffff);
+      border-radius: 4px;
+      padding-top: 6px;
+      padding-bottom: 6px;
     }
+
+    small {
+      display: block;
+      font-size: 0.8em;
+      font-weight: normal;
+      color: #555;
+      margin-top: 4px;
+    }
+
     img {
-      border: 2px solid #ccc;
+      border: 2px solid #ddd;
       border-radius: 8px;
-      margin: 10px;
+      margin: 12px;
       box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+      transition: transform 0.2s ease;
     }
+    img:hover {
+      transform: scale(1.02);
+    }
+
     p a {
       display: inline-block;
       margin-top: 30px;
@@ -34,6 +59,7 @@
       background: #007acc;
       padding: 8px 14px;
       border-radius: 6px;
+      font-weight: 500;
     }
     p a:hover {
       background: #005fa3;
@@ -43,11 +69,11 @@
 <body>
   <h1>Project 1: Perspective & Dolly Zoom</h1>
 
-  <h2>Part 1: Picture of Self <br><small>(First is closeup, second is zoomed in from a distance)</small></h2>
+  <h2>Part 1: Picture of Self <small>(First is closeup, second is zoomed in from a distance)</small></h2>
   <img src="./media/selfie_close.jpg" width="400">
   <img src="./media/selfie_far.jpg" width="400">
 
-  <h2>Part 2: Architectural Perspective Compression <br><small>(First is a near position, second is farther away but zoomed in)</small></h2>
+  <h2>Part 2: Architectural Perspective Compression <small>(First is a near position, second is farther away but zoomed in)</small></h2>
   <img src="./media/far.jpg" width="400">
   <img src="./media/zoom.jpg" width="400">
 
