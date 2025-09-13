@@ -10,7 +10,6 @@
       background-color: #fdfdfd;
       color: #333;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 25px;
@@ -18,7 +17,6 @@
       color: #222;
       letter-spacing: 1px;
     }
-
     h2 {
       margin-top: 40px;
       padding-left: 12px;
@@ -31,15 +29,7 @@
       padding-top: 6px;
       padding-bottom: 6px;
     }
-
-    small {
-      display: block;
-      font-size: 0.8em;
-      font-weight: normal;
-      color: #555;
-      margin-top: 4px;
-    }
-
+    small { display:block; font-size: .85em; color:#555; margin-top: 4px; }
     img {
       max-width: 300px;
       border: 2px solid #ddd;
@@ -48,43 +38,157 @@
       box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
       transition: transform 0.2s ease;
     }
-    img:hover {
-      transform: scale(1.02);
+    img:hover { transform: scale(1.02); }
+    .back a {
+      display: inline-block; margin-top: 30px; text-decoration: none; color: #fff;
+      background: #007acc; padding: 8px 14px; border-radius: 6px; font-weight: 500;
     }
-
-    p a {
-      display: inline-block;
-      margin-top: 30px;
-      text-decoration: none;
-      color: white;
-      background: #007acc;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-weight: 500;
-    }
-    p a:hover {
-      background: #005fa3;
-    }
+    .back a:hover { background: #005fa3; }
+    .row { display:flex; flex-wrap: wrap; align-items: center; }
+    .cap { min-width: 260px; }
   </style>
 </head>
 <body>
-  <h1>Project 1: Colorizing the Prokudin-Gorskii Photo Collection</h1>
+  <h1>Project 1: Colorizing the Prokudin-Gorskii Collection</h1>
 
-  <h2>Example Results <small>Aligned using single-scale (JPG) and pyramid (TIF)</small></h2>
-  <img src="./media/cathedral_aligned.jpg" alt="Cathedral">
-  <img src="./media/monastery_aligned.jpg" alt="Monastery">
-  <img src="./media/tobolsk_aligned.jpg" alt="Tobolsk">
+  <h2>Overview</h2>
+  <p>
+    I split each tall glass-plate scan into <em>three grayscale slices</em> (top→bottom = B, G, R),
+    aligned <strong>G and R to B</strong> by searching over integer shifts (dy, dx) using
+    normalized cross-correlation (NCC), then stacked into RGB. For large TIFFs I used a
+    <strong>coarse-to-fine image pyramid</strong> to find big shifts efficiently. I cropped borders
+    during scoring to avoid misleading edges and lightly trimmed the final images for presentation.
+  </p>
 
-  <h2>High-Resolution Glass Plates <small>Aligned using pyramid method</small></h2>
-  <img src="./media/church_aligned.jpg" alt="Church">
-  <img src="./media/emir_aligned.jpg" alt="Emir">
-  <img src="./media/self_portrait_aligned.jpg" alt="Self Portrait">
+  <h2>Methodology</h2>
+  <ul>
+    <li><strong>Similarity:</strong> NCC on cropped interiors; optional edge magnitude features for difficult plates (e.g., <em>emir</em>).</li>
+    <li><strong>Single-scale (JPGs):</strong> brute-force search in a small window.</li>
+    <li><strong>Pyramid (TIFFs):</strong> align at coarse scale, scale shift up, refine in a ±5 local window at full res.</li>
+    <li><strong>Stack:</strong> apply best shifts to G and R, stack [R,G,B], clamp to [0,1], save as JPG.</li>
+  </ul>
 
-  <h2>Additional Results <small>Manually chosen negatives (np_*)</small></h2>
-  <img src="./media/np_camel_aligned.jpg" alt="Camel">
-  <img src="./media/np_kapri_aligned.jpg" alt="Kapri">
-  <img src="./media/np_mosque_aligned.jpg" alt="Mosque">
+  <h2>Results (shifts are <code>(dy, dx)</code>)</h2>
 
-  <p><a href="../index.html">⬅ Back to main page</a></p>
+  <div class="row">
+    <div class="cap">
+      <h3>cathedral.jpg <small>G=(5, 2), R=(12, 3)</small></h3>
+    </div>
+    <img src="./media/cathedral_aligned.jpg" alt="cathedral aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>church.tif <small>G=(25, 4), R=(58, -4)</small></h3>
+    </div>
+    <img src="./media/church_aligned.jpg" alt="church aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>emir.tif <small>G=(49, 24), R=(107, 41)</small></h3>
+    </div>
+    <img src="./media/emir_aligned.jpg" alt="emir aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>harvesters.tif <small>G=(60, 18), R=(123, 14)</small></h3>
+    </div>
+    <img src="./media/harvesters_aligned.jpg" alt="harvesters aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>icon.tif <small>G=(41, 18), R=(90, 23)</small></h3>
+    </div>
+    <img src="./media/icon_aligned.jpg" alt="icon aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>italil.tif <small>G=(38, 22), R=(77, 36)</small></h3>
+    </div>
+    <img src="./media/italil_aligned.jpg" alt="italil aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>lastochikino.tif <small>G=(-3, -2), R=(75, -8)</small></h3>
+    </div>
+    <img src="./media/lastochikino_aligned.jpg" alt="lastochikino aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>lugano.tif <small>G=(41, -16), R=(93, -29)</small></h3>
+    </div>
+    <img src="./media/lugano_aligned.jpg" alt="lugano aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>melons.tif <small>G=(81, 10), R=(178, 13)</small></h3>
+    </div>
+    <img src="./media/melons_aligned.jpg" alt="melons aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>monastery.jpg <small>G=(-3, 2), R=(3, 2)</small></h3>
+    </div>
+    <img src="./media/monastery_aligned.jpg" alt="monastery aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>np_camel.tif <small>G=(18, 14), R=(78, 33)</small> <small>(user-selected)</small></h3>
+    </div>
+    <img src="./media/np_camel_aligned.jpg" alt="np_camel aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>np_kapri.tif <small>G=(31, -16), R=(78, -25)</small> <small>(user-selected)</small></h3>
+    </div>
+    <img src="./media/np_kapri_aligned.jpg" alt="np_kapri aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>np_mosque.tif <small>G=(32, 6), R=(79, 8)</small> <small>(user-selected)</small></h3>
+    </div>
+    <img src="./media/np_mosque_aligned.jpg" alt="np_mosque aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>self_portrait.tif <small>G=(78, 29), R=(175, 37)</small></h3>
+    </div>
+    <img src="./media/self_portrait_aligned.jpg" alt="self_portrait aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>siren.tif <small>G=(49, -5), R=(96, -24)</small></h3>
+    </div>
+    <img src="./media/siren_aligned.jpg" alt="siren aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>three_generations.tif <small>G=(52, 13), R=(111, 10)</small></h3>
+    </div>
+    <img src="./media/three_generations_aligned.jpg" alt="three_generations aligned">
+  </div>
+
+  <div class="row">
+    <div class="cap">
+      <h3>tobolsk.jpg <small>G=(3, 3), R=(7, 3)</small></h3>
+    </div>
+    <img src="./media/tobolsk_aligned.jpg" alt="tobolsk aligned">
+  </div>
+
+  <p class="back"><a href="../index.html">⬅ Back to main page</a></p>
 </body>
 </html>
