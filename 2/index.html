@@ -70,6 +70,10 @@
     To deal with larger TIF images, a pyramid search technique is used. A downsampled version of the image is first aligned, and the best shift is estimated. Since the image is smaller we can consider a large shift range. Then the image is scaled up along with the shift accordingly, and the shift is refined. The shift gets progressively refined until full resolution, at which point we only need to check over a small range (±5).
   </p>
 
+  <div class="row"><div class="cap"><h3>cathedral.jpg <small>G=(5, 2), R=(12, 3)</small></h3></div><img src="./media/cathedral_aligned.jpg" alt="cathedral"></div>
+  <div class="row"><div class="cap"><h3>monastery.jpg <small>G=(-3, 2), R=(3, 2)</small></h3></div><img src="./media/monastery_aligned.jpg" alt="monastery"></div>
+  <div class="row"><div class="cap"><h3>tobolsk.jpg <small>G=(3, 3), R=(7, 3)</small></h3></div><img src="./media/tobolsk_aligned.jpg" alt="tobolsk"></div>
+
   <div class="row"><div class="cap"><h3>church.tif <small>G=(25, 4), R=(58, -4)</small></h3></div><img src="./media/church_aligned.jpg" alt="church"></div>
   <div class="row"><div class="cap"><h3>emir.tif (no edges) <small>G=(49, 24), R=(107, 41)</small></h3></div><img src="./media/emir_broken.jpg" alt="emir broken"></div>
   <div class="row"><div class="cap"><h3>harvesters.tif <small>G=(60, 18), R=(123, 14)</small></h3></div><img src="./media/harvesters_aligned.jpg" alt="harvesters"></div>
