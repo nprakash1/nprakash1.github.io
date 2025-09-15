@@ -71,7 +71,7 @@
   </p>
 
   <div class="row"><div class="cap"><h3>church.tif <small>G=(25, 4), R=(58, -4)</small></h3></div><img src="./media/church_aligned.jpg" alt="church"></div>
-  <div class="row"><div class="cap"><h3>emir.tif <small>G=(49, 24), R=(107, 41)</small></h3></div><img src="./media/emir_aligned.jpg" alt="emir"></div>
+  <div class="row"><div class="cap"><h3>emir.tif (no edges) <small>G=(49, 24), R=(107, 41)</small></h3></div><img src="./media/emir_broken.jpg" alt="emir broken"></div>
   <div class="row"><div class="cap"><h3>harvesters.tif <small>G=(60, 18), R=(123, 14)</small></h3></div><img src="./media/harvesters_aligned.jpg" alt="harvesters"></div>
   <div class="row"><div class="cap"><h3>icon.tif <small>G=(41, 18), R=(90, 23)</small></h3></div><img src="./media/icon_aligned.jpg" alt="icon"></div>
   <div class="row"><div class="cap"><h3>italil.tif <small>G=(38, 22), R=(77, 36)</small></h3></div><img src="./media/italil_aligned.jpg" alt="italil"></div>
@@ -90,6 +90,7 @@
   <p>
     Instead of taking raw pixel values, an optimization with edge maps can be used, to rely on structural components instead of potential brightness differences. This helped me align the <em>emir.tif</em> image properly. The edge maps are calculated by taking image gradients in both the x and y directions and then computing the Euclidean magnitude to get a single value. The idea is that edges will stand out clearly but areas with less contrast/change will not stand out as much.
   </p>
+  <div class="row"><div class="cap"><h3>emir.tif (edge detection result)</h3></div><img src="./media/emir_aligned.jpg" alt="emir aligned"></div>
 
   <p class="back"><a href="../index.html">⬅ Back to main page</a></p>
 </body>
