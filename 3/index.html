@@ -33,7 +33,7 @@
     I implemented convolution with four loops and two loops (zero padding), then compared against <code>scipy.signal.convolve2d</code>. Below is a summary collage showing the original,
     box-filtered output, and comparisons to SciPy. 
   </p>
-  <p><em>Runtime note:</em> Finite-difference filters (e.g., 1×2 / 2×1) are much faster than a 9×9 box filter because they do O(1) work per pixel vs. ~81 operations per pixel. Separable or optimized (C/FFT) methods narrow this gap for larger kernels.</p>
+  <p><em>Runtime note:</em> Finite-difference filters (e.g., 1×2 / 2×1) are much faster than a 9×9 box filter because they do O(1) work per pixel vs. ~81 operations per pixel.</p>
   <div class="row">
     <div class="cap">
       <h3>Convolution summary</h3>
@@ -46,7 +46,7 @@
       <h3>Finite difference result</h3>
       <small>Dx/Dy responses and combined view</small>
     </div>
-    <img src="./media/part1_1_finite_diff.png" alt="Part 1.1 finite difference output">
+    <img class="wide" src="./media/part1_1_finite_diff.png" alt="Part 1.1 finite difference output">
   </div>
 
   <h2>Part 1.2: Finite Difference Operator</h2>
