@@ -10,19 +10,23 @@
          border-radius: 4px; padding-top: 6px; padding-bottom: 6px; }
     h3 { margin: 14px 0 6px; }
     small { display:block; font-size: .85em; color:#555; margin-top: 4px; }
+
     img { max-width: 300px; border: 2px solid #ddd; border-radius: 8px; margin: 12px; box-shadow: 2px 2px 6px rgba(0,0,0,0.15); transition: transform 0.2s ease; }
     img:hover { transform: scale(1.02); }
 
-    .wide { max-width: 720px; }
-    .wide-lg { max-width: 1000px; }
-    .wide-xl { max-width: 1200px; }
-    .wide-xxl { max-width: 1400px; } /* extra-big for DN pipeline */
+    .wide     { max-width: 720px; }
+    .wide-lg  { max-width: 1000px; }
+    .wide-xl  { max-width: 1200px; }
+    .wide-xxl { max-width: 1400px; }
+    .huge     { max-width: 1600px; } /* use for one-off extra-big images */
 
     .row { display:flex; flex-wrap: wrap; align-items: center; }
     .row.center { justify-content: center; }
     .cap { min-width: 260px; }
-    .two-big { display:flex; flex-wrap: wrap; gap: 16px; }
-    .two-big img { max-width: 680px; flex: 1 1 600px; } /* big two-up hybrids */
+
+    /* two-up hybrids — made bigger */
+    .two-big { display:flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+    .two-big img { max-width: 900px; flex: 1 1 820px; }
 
     .back a { display:inline-block; margin-top:30px; text-decoration:none; color:#fff; background:#007acc; padding:8px 14px; border-radius:6px; font-weight:500; }
     .back a:hover { background:#005fa3; }
@@ -94,13 +98,13 @@
     <img class="wide-xxl" src="./media/part2_2_dn_pipeline.png" alt="DN pipeline (large)">
   </div>
 
-  <!-- Two large hybrid results -->
+  <!-- Two large hybrid results; second one even bigger -->
   <div class="row center">
     <div class="cap"><h3>Hybrid results</h3><small>Two examples shown large</small></div>
   </div>
   <div class="two-big">
     <img src="./media/part2_2_hybrid_A.png" alt="Hybrid A (large)">
-    <img src="./media/part2_2_hybrid_B.png" alt="Hybrid B (large)">
+    <img class="huge" src="./media/part2_2_hybrid_B.png" alt="Hybrid B (extra large)">
   </div>
 
   <h2>Part 2.3: Gaussian & Laplacian Stacks</h2>
@@ -108,15 +112,28 @@
     I build stacks without downsampling: repeated Gaussian smoothing for the Gaussian stack and differences between levels for the Laplacian stack.
     The Laplacian bands isolate structures from fine to coarse, matching Szelski Fig. 3.42 behavior.
   </p>
-  <div class="row"><div class="cap"><h3>Apple/Orange — stacks and levels</h3></div><img src="./media/part2_3_oraple_stacks.png" alt="stacks"></div>
+  <!-- Existing image made bigger -->
+  <div class="row center">
+    <div class="cap"><h3>Apple/Orange — stacks and levels</h3></div>
+  </div>
+  <div class="row center">
+    <img class="wide-xxl" src="./media/part2_3_oraple_stacks.png" alt="stacks big">
+  </div>
+  <!-- Room for one more image under Part 2.3 -->
+  <div class="row center">
+    <div class="cap"><h3>Additional stack visualization</h3><small>(optional second figure)</small></div>
+  </div>
+  <div class="row center">
+    <img class="wide-xxl" src="./media/part2_3_oraple_stacks_extra.png" alt="stacks extra big">
+  </div>
 
   <h2>Part 2.4: Multiresolution Blending</h2>
   <p>
     I blur a mask into a Gaussian stack and combine the two images’ Laplacian stacks level-wise, then add the base level. This yields a smooth seam.
     I show vertical, horizontal, and irregular (circular) masks, plus two creative blends.
   </p>
-  <div class="row"><div class="cap"><h3>Oraple blends (v/h/circle)</h3></div><img src="./media/part2_4_oraple_blends.png" alt="oraple blends"></div>
-  <div class="row"><div class="cap"><h3>Custom blends</h3></div><img src="./media/part2_4_custom.png" alt="custom blends"></div>
+  <div class="row"><div class="cap"><h3>Oraple blends (v/h/circle)</h3></div><img class="wide-xl" src="./media/part2_4_oraple_blends.png" alt="oraple blends"></div>
+  <div class="row"><div class="cap"><h3>Custom blends</h3></div><img class="wide-xl" src="./media/part2_4_custom.png" alt="custom blends"></div>
 
   <h2>Most Important Lesson</h2>
   <p>
