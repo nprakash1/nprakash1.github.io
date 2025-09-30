@@ -1,169 +1,280 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Project 2 — Fun with Filters and Frequencies (CS180)</title>
+  <title>CS180 Project 2 — Fun with Filters and Frequencies</title>
   <style>
-    body { font-family: "Segoe UI", Arial, sans-serif; margin: 30px; line-height: 1.6; background:#fdfdfd; color:#333; }
-    h1 { text-align: center; margin-bottom: 25px; font-size: 2.2em; color:#222; letter-spacing: .5px; }
-    h2 { margin-top: 36px; padding-left: 12px; font-size: 1.5em; font-weight: 600; color:#005fa3;
-         border-left: 6px solid #007acc; background: linear-gradient(to right, #f0f8ff, #ffffff);
-         border-radius: 4px; padding-top: 6px; padding-bottom: 6px; }
-    h3 { margin: 6px 0 2px; }
-    small { display:block; font-size:.85em; color:#555; margin-top: 2px; }
-    .row { display:flex; flex-wrap: wrap; align-items: center; margin: 8px 0 18px; }
-    .cap { min-width: 260px; max-width: 360px; }
-    img { max-width: 320px; border: 2px solid #ddd; border-radius: 8px; margin: 10px; box-shadow: 2px 2px 6px rgba(0,0,0,0.15); transition: transform .2s ease; }
-    img:hover { transform: scale(1.02); }
-    .back a { display:inline-block; margin-top: 28px; text-decoration:none; color:#fff; background:#007acc; padding: 8px 14px; border-radius:6px; font-weight:500; }
-    .back a:hover { background:#005fa3; }
-    code { background:#f3f6fa; padding: 1px 4px; border-radius:4px; }
+    :root {
+      --accent: #007acc;
+      --accent-dark: #005fa3;
+      --bg-lite: #f0f8ff;
+      --text: #333;
+      --text-2: #555;
+      --card: #ffffff;
+      --shadow: rgba(0,0,0,0.15);
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 28px;
+      line-height: 1.6;
+      background: #fdfdfd;
+      color: var(--text);
+    }
+    header {
+      display:flex; align-items:center; gap:14px; margin-bottom: 10px;
+    }
+    header img { height: 38px; width:auto; border:none; box-shadow:none; }
+    h1 {
+      margin: 8px 0 22px;
+      font-size: 2.1rem;
+      color:#222;
+      letter-spacing:.2px;
+    }
+    h2 {
+      margin-top: 34px;
+      padding: 6px 12px;
+      font-size: 1.45rem;
+      font-weight: 650;
+      color: var(--accent-dark);
+      border-left: 6px solid var(--accent);
+      background: linear-gradient(to right, var(--bg-lite), #ffffff 55%);
+      border-radius: 4px;
+    }
+    h3 {
+      margin: 12px 0 6px;
+      font-size: 1.05rem;
+    }
+    p { margin: 10px 0 14px; }
+    small { display:block; font-size: .86em; color: var(--text-2); margin-top: 3px; }
+    .row { display:flex; flex-wrap:wrap; gap:14px; align-items:flex-start; margin: 6px 0 14px; }
+    .cap { min-width: 260px; max-width: 560px; }
+    .grid {
+      display:grid; gap:12px;
+      grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+      align-items:start;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid #e9e9e9;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 2px 2px 8px var(--shadow);
+    }
+    img {
+      max-width: 320px;
+      height: auto;
+      border: 2px solid #e6e6e6;
+      border-radius: 8px;
+      margin: 10px 6px 4px 0;
+      box-shadow: 2px 2px 6px var(--shadow);
+      transition: transform .18s ease;
+      background:#fff;
+    }
+    img:hover { transform: scale(1.015); }
+    /* Bigger image style just for Part 1.1 summary */
+    .img-big { max-width: 800px; }
+
+    code, pre {
+      background:#f7f7f9; border:1px solid #eee; border-radius:8px;
+      padding:10px; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:.92rem; color:#1a1a1a;
+    }
+    .back a {
+      display:inline-block; margin-top:28px; text-decoration:none; color:#fff;
+      background: var(--accent); padding: 8px 14px; border-radius: 6px; font-weight: 500;
+      box-shadow: 1px 1px 5px var(--shadow);
+    }
+    .back a:hover { background: var(--accent-dark); }
   </style>
 </head>
 <body>
-  <h1>Project 2 — Fun with Filters and Frequencies (CS180)</h1>
+
+  <header>
+    <img src="./media/berkeley_logo.png" alt="Berkeley logo">
+    <div>
+      <div style="font-weight:700; color:#003262;">Programming Project #2 (CS180)</div>
+      <div style="font-size:.95rem; color:#003262;">Fun with Filters and Frequencies</div>
+    </div>
+  </header>
+
+  <h1>Project 2 — Fun with Filters and Frequencies</h1>
 
   <h2>Overview</h2>
   <p>
-    This project explores how linear filters and frequency representations shape images.
-    I first implement convolution from scratch and finite-difference edges. Then I use
-    Gaussian/DoG filters to denoise gradients. In Part 2, I apply unsharp masking to
-    enhance high frequencies, build hybrid images that mix low/high bands, and finish
-    with multiresolution blending using Gaussian/Laplacian stacks.
+    This project explores spatial filtering and frequency-domain intuition. I re-implemented convolutions, built derivative and Gaussian filters, created hybrid images by combining low/high frequencies, and performed multi-resolution blending via Gaussian/Laplacian stacks. Below are concise write-ups and results for each part.
   </p>
 
-  <!-- ===================== Part 1.1 ===================== -->
-  <h2 id="part1-1">Part 1.1: Convolutions from Scratch</h2>
+  <!-- ======================= PART 1 ======================= -->
+
+  <h2>Part 1 — Fun with Filters</h2>
+
+  <h3>1.1 Convolutions from Scratch</h3>
   <p>
-    I implemented convolution with four loops, then optimized to two loops with NumPy slicing,
-    and compared outputs to <code>scipy.signal.convolve2d</code>. Zero padding is used so sizes
-    match. The single panel below summarizes the grayscale input, 9×9 box-filtered result,
-    and finite differences in x/y for my selfie.
+    I implemented 2D convolution in NumPy with padding (four-loop and two-loop variants) and compared results/time with <code>scipy.signal.convolve2d</code>. Below is a single summary panel that includes my grayscale selfie, 9×9 box filter result, and Dx/Dy finite-difference outputs plus a runtime note.
   </p>
   <div class="row">
-    <div class="cap">
-      <h3>Part 1.1 Summary</h3>
-      <small>Gray • Box 9×9 • Dx • Dy</small>
+    <img class="img-big" src="./media/part1_1_summary.png" alt="Part 1.1 summary panel">
+  </div>
+
+  <h3>1.2 Finite Difference Operator</h3>
+  <p>
+    I convolved <em>cameraman</em> with Dx and Dy to obtain gradients, formed gradient magnitude, and binarized with a threshold to make edges. The threshold trades off noise suppression vs. edge completeness; I chose it visually to balance both.
+  </p>
+  <div class="grid">
+    <div class="card">
+      <h3>Grad-X</h3>
+      <img src="./media/part1_2_dx.png" alt="Dx result">
     </div>
-    <img src="./media/part1_1_summary.png" alt="Part 1.1 summary panel">
+    <div class="card">
+      <h3>Grad-Y</h3>
+      <img src="./media/part1_2_dy.png" alt="Dy result">
+    </div>
+    <div class="card">
+      <h3>Magnitude</h3>
+      <img src="./media/part1_2_mag.png" alt="Gradient magnitude">
+    </div>
+    <div class="card">
+      <h3>Binarized Edges</h3>
+      <img src="./media/part1_2_edges.png" alt="Edge map">
+    </div>
   </div>
 
-  <!-- ===================== Part 1.2 ===================== -->
-  <h2 id="part1-2">Part 1.2: Finite Difference Operator</h2>
+  <h3>1.3 Derivative of Gaussian (DoG)</h3>
   <p>
-    I computed partial derivatives (Dx, Dy) on the Cameraman image with
-    <code>convolve2d</code>, then formed gradient magnitude and thresholded to get an
-    edge map. Lower thresholds capture more detail but increase noise, while higher
-    thresholds suppress both. I chose a mid value to keep dominant structures visible.
+    I smoothed with a Gaussian then differentiated, and also built DoG filters by convolving G with Dx/Dy. The smoothed gradients reduce noise while preserving major edges, and the DoG one-shot approach matches the blur-then-diff outcome.
   </p>
-  <div class="row">
-    <div class="cap"><h3>Finite Differences</h3><small>Cameraman — Dx, Dy, |∇|, edges</small></div>
-    <img src="./media/part1_2_dx.png" alt="Dx">
-    <img src="./media/part1_2_dy.png" alt="Dy">
-    <img src="./media/part1_2_mag.png" alt="Gradient magnitude">
-    <img src="./media/part1_2_edges.png" alt="Binarized edges">
+  <div class="grid">
+    <div class="card">
+      <h3>DoG-X</h3>
+      <img src="./media/part1_3_dogx.png" alt="DoG X filter">
+    </div>
+    <div class="card">
+      <h3>DoG-Y</h3>
+      <img src="./media/part1_3_dogy.png" alt="DoG Y filter">
+    </div>
+    <div class="card">
+      <h3>Blurred</h3>
+      <img src="./media/part1_3_blurred.png" alt="Blurred image">
+    </div>
+    <div class="card">
+      <h3>Edges (DoG)</h3>
+      <img src="./media/part1_3_edges_dog.png" alt="Edges via DoG">
+    </div>
   </div>
 
-  <!-- ===================== Part 1.3 ===================== -->
-  <h2 id="part1-3">Part 1.3: Derivative of Gaussian (DoG)</h2>
+  <!-- ======================= PART 2 ======================= -->
+
+  <h2>Part 2 — Fun with Frequencies</h2>
+
+  <h3>2.1 Image Sharpening (Unsharp Mask)</h3>
   <p>
-    I smoothed the image with a Gaussian and re-ran the edge pipeline, which reduced
-    speckle noise and isolated coherent contours. I also pre-convolved Dx/Dy with the
-    Gaussian to form DoG filters that match the two-step result. The DoG approach is
-    efficient and yields similar edges with less noise.
+    I compute high-frequencies as <code>img − (img * G)</code>, then add a scaled amount back. I show blurred, high-freq viz, and sharpened results on Taj and a second photo, with multiple “amount” settings to illustrate the trade-off between crispness and artifacts.
   </p>
-  <div class="row">
-    <div class="cap"><h3>DoG Filters & Results</h3><small>DoG<sub>x</sub>, DoG<sub>y</sub>, blurred, edges</small></div>
-    <img src="./media/part1_3_dogx.png" alt="DoGx">
-    <img src="./media/part1_3_dogy.png" alt="DoGy">
-    <img src="./media/part1_3_blurred.png" alt="Blurred">
-    <img src="./media/part1_3_edges.png" alt="Edges (DoG)">
+  <div class="grid">
+    <div class="card">
+      <h3>Taj: Original</h3>
+      <img src="./media/part2_1_taj_original.png" alt="Taj original">
+    </div>
+    <div class="card">
+      <h3>Taj: Blurred</h3>
+      <img src="./media/part2_1_taj_blur.png" alt="Taj blurred">
+    </div>
+    <div class="card">
+      <h3>Taj: High-Freq</h3>
+      <img src="./media/part2_1_taj_hi.png" alt="Taj high frequencies">
+    </div>
+    <div class="card">
+      <h3>Taj: Sharpened</h3>
+      <img src="./media/part2_1_taj_sharp.png" alt="Taj sharpened">
+    </div>
+    <div class="card">
+      <h3>Other: Original</h3>
+      <img src="./media/part2_1_self_original.png" alt="Self original">
+    </div>
+    <div class="card">
+      <h3>Other: Sharpened</h3>
+      <img src="./media/part2_1_self_sharp.png" alt="Self sharpened">
+    </div>
   </div>
 
-  <!-- ===================== Part 2.1 ===================== -->
-  <h2 id="part2-1">Part 2.1: Image “Sharpening” (Unsharp Mask)</h2>
+  <h3>2.2 Hybrid Images</h3>
   <p>
-    Unsharp masking adds a scaled high-frequency residual <code>(I − G∗I)</code> back to
-    the image to increase perceived sharpness. I show Taj at different amounts, a blurred
-    sharp image re-sharpened, and the high-frequency visualization. Too much gain amplifies
-    noise and halos; moderate values preserve detail naturally.
+    I low-pass A and high-pass B, then add. For one pair I also show Fourier magnitudes of inputs, filtered components, and output to justify the cutoff choice. The hybrid flips interpretation with viewing distance.
   </p>
-  <div class="row">
-    <div class="cap"><h3>Taj — Sharpening</h3><small>Original, a=0.5, a=1.0, a=1.5</small></div>
-    <img src="./media/part2_1_taj_orig.png" alt="Taj original">
-    <img src="./media/part2_1_taj_a05.png" alt="Taj a=0.5">
-    <img src="./media/part2_1_taj_a10.png" alt="Taj a=1.0">
-    <img src="./media/part2_1_taj_a15.png" alt="Taj a=1.5">
-  </div>
-  <div class="row">
-    <div class="cap"><h3>Sharpening Analysis</h3><small>Blurred, high-freq (viz), re-sharpened</small></div>
-    <img src="./media/part2_1_blurred.png" alt="Blurred">
-    <img src="./media/part2_1_highfreq.png" alt="High frequency viz">
-    <img src="./media/part2_1_sharpened.png" alt="Re-sharpened">
+  <div class="grid">
+    <div class="card">
+      <h3>Derek + Nutmeg (A,B)</h3>
+      <img src="./media/part2_2_dn_inputs.png" alt="Derek and Nutmeg inputs">
+      <small>Aligned inputs.</small>
+    </div>
+    <div class="card">
+      <h3>Filtered</h3>
+      <img src="./media/part2_2_dn_filtered.png" alt="LP + HP">
+      <small>Low-pass A, high-pass B.</small>
+    </div>
+    <div class="card">
+      <h3>Hybrid</h3>
+      <img src="./media/part2_2_dn_hybrid.png" alt="DN hybrid">
+    </div>
+    <div class="card">
+      <h3>FFTs</h3>
+      <img src="./media/part2_2_dn_ffts.png" alt="FFT panel">
+      <small>Log-magnitude spectra.</small>
+    </div>
+    <div class="card">
+      <h3>Hybrid #2</h3>
+      <img src="./media/part2_2_pair2_hybrid.png" alt="Hybrid 2">
+    </div>
+    <div class="card">
+      <h3>Hybrid #3</h3>
+      <img src="./media/part2_2_pair3_hybrid.png" alt="Hybrid 3">
+    </div>
   </div>
 
-  <!-- ===================== Part 2.2 ===================== -->
-  <h2 id="part2-2">Part 2.2: Hybrid Images</h2>
+  <h3>2.3 Gaussian & Laplacian Stacks (Oraple)</h3>
   <p>
-    A hybrid image sums a low-pass version of one image with a high-pass of another.
-    Up close, the high frequencies dominate; at a distance, the low frequencies remain.
-    I aligned pairs with clicked keypoints, tuned Gaussian sigmas per band, and visualized
-    FFT log-magnitudes for my favorite hybrid.
+    I build same-size Gaussian (progressively blurred) and Laplacian (band-pass) stacks. Below reproduces Fig. 3.42 style panels: high/medium/low contributions, base masked images, and the final blended result using a smoothed vertical mask.
   </p>
-  <div class="row">
-    <div class="cap"><h3>Derek + Nutmeg (Process)</h3><small>Inputs, filtered bands, FFTs, final</small></div>
-    <img src="./media/part2_2_dn_inputs.png" alt="Derek/Nutmeg inputs">
-    <img src="./media/part2_2_dn_filtered.png" alt="Low/High bands">
-    <img src="./media/part2_2_dn_ffts.png" alt="FFTs">
-    <img src="./media/part2_2_dn_hybrid.png" alt="Hybrid">
-  </div>
-  <div class="row">
-    <div class="cap"><h3>Hybrid #2</h3><small>Inputs and final</small></div>
-    <img src="./media/part2_2_h2_inputs.png" alt="Hybrid 2 inputs">
-    <img src="./media/part2_2_h2_out.png" alt="Hybrid 2 output">
-  </div>
-  <div class="row">
-    <div class="cap"><h3>Hybrid #3</h3><small>Inputs and final</small></div>
-    <img src="./media/part2_2_h3_inputs.png" alt="Hybrid 3 inputs">
-    <img src="./media/part2_2_h3_out.png" alt="Hybrid 3 output">
+  <div class="grid">
+    <div class="card">
+      <h3>Stack Panels</h3>
+      <img src="./media/part2_3_stackvis.png" alt="Stack visualization">
+      <small>Levels and per-band contributions.</small>
+    </div>
+    <div class="card">
+      <h3>Final (Oraple)</h3>
+      <img src="./media/part2_3_final_oraple.png" alt="Final oraple">
+    </div>
   </div>
 
-  <!-- ===================== Part 2.3 ===================== -->
-  <h2 id="part2-3">Part 2.3: Gaussian & Laplacian Stacks</h2>
+  <h3>2.4 Multiresolution Blending</h3>
   <p>
-    I built stacks without downsampling by repeatedly blurring (Gaussian) and differencing
-    adjacent levels (Laplacian). Applying this to Apple/Orange reproduces Szelski Fig. 3.42:
-    level-wise contributions at high/medium/low frequencies, masked bases, and the final
-    multi-band reconstruction. The stacks are also reused for blending.
+    Using Gaussian/Laplacian stacks for both inputs and a Gaussian stack for the mask, I blend across frequency bands to hide seams. I show apple+orange (vertical), day+night skyline (vertical/horizontal), and mountain+waterfall (circle) blends.
   </p>
-  <div class="row">
-    <div class="cap"><h3>Apple/Orange — Fig. 3.42</h3><small>(a–l) reconstruction panels</small></div>
-    <img src="./media/part2_3_fig342.png" alt="Figure 3.42 panels">
+  <div class="grid">
+    <div class="card">
+      <h3>Apple / Orange</h3>
+      <img src="./media/part2_4_oraple_vertical.png" alt="Apple-Orange vertical">
+      <small>Vertical mask blend.</small>
+    </div>
+    <div class="card">
+      <h3>Morning / Night</h3>
+      <img src="./media/part2_4_daynight_horizontal.png" alt="Day-Night horizontal">
+      <small>Horizontal mask blend.</small>
+    </div>
+    <div class="card">
+      <h3>Mountain / Waterfall</h3>
+      <img src="./media/part2_4_mtnfall_circle.png" alt="Mountain-Waterfall circle">
+      <small>Circular mask blend.</small>
+    </div>
   </div>
 
-  <!-- ===================== Part 2.4 ===================== -->
-  <h2 id="part2-4">Part 2.4: Multiresolution Blending (Oraple)</h2>
+  <h2>Takeaways</h2>
   <p>
-    I blend images with a smoothed mask at each level: multiply the mask’s Gaussian stack
-    with corresponding Laplacian levels and sum with a blended base. Vertical/horizontal
-    masks create clean halves, while irregular masks produce natural seams around shapes.
-    I include Apple/Orange and two custom pairs.
-  </p>
-  <div class="row">
-    <div class="cap"><h3>Oraple — Vertical/Horizontal/Irregular</h3><small>Inputs, masks, blends</small></div>
-    <img src="./media/part2_4_apple.png" alt="Apple/Orange blend">
-    <img src="./media/part2_4_morning_night.png" alt="Morning/Night blend">
-    <img src="./media/part2_4_mountain_waterfall.png" alt="Mountain/Waterfall blend">
-  </div>
-
-  <h2>Reflection</h2>
-  <p>
-    The main insight was how frequency bands control perception: sharpening and hybrids
-    rely on boosting or isolating bands, while multiresolution blending hides seams by
-    smoothing masks per level. Good alignment matters a lot for hybrids. Choosing sigmas
-    and mask shapes gives strong creative control.
+    High-frequency control explains “sharpness,” while pyramids/stacks let us manipulate bands for compelling composites. Alignment and mask smoothness matter as much as parameter choices. Visualizing spectra and per-level contributions makes the results predictable.
   </p>
 
-  <p class="back"><a href="../index.html">⬅ Back to main page</a></p>
+  <p class="back"><a href="./index.html">⬅ Back to main page</a></p>
 </body>
 </html>
