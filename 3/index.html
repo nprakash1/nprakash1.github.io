@@ -12,11 +12,18 @@
     small { display:block; font-size: .85em; color:#555; margin-top: 4px; }
     img { max-width: 300px; border: 2px solid #ddd; border-radius: 8px; margin: 12px; box-shadow: 2px 2px 6px rgba(0,0,0,0.15); transition: transform 0.2s ease; }
     img:hover { transform: scale(1.02); }
+
     .wide { max-width: 720px; }
     .wide-lg { max-width: 1000px; }
-    .wide-xl { max-width: 1200px; } /* bigger size for Part 2.1 images */
+    .wide-xl { max-width: 1200px; }
+    .wide-xxl { max-width: 1400px; } /* extra-big for DN pipeline */
+
     .row { display:flex; flex-wrap: wrap; align-items: center; }
+    .row.center { justify-content: center; }
     .cap { min-width: 260px; }
+    .two-big { display:flex; flex-wrap: wrap; gap: 16px; }
+    .two-big img { max-width: 680px; flex: 1 1 600px; } /* big two-up hybrids */
+
     .back a { display:inline-block; margin-top:30px; text-decoration:none; color:#fff; background:#007acc; padding:8px 14px; border-radius:6px; font-weight:500; }
     .back a:hover { background:#005fa3; }
   </style>
@@ -67,19 +74,34 @@
 
   <h2>Part 2.1: Image Sharpening (Unsharp Mask)</h2>
   <p>
-    I sharpen by adding a scaled high-frequency component: <code>sharp = img + a·(img − G*img)</code>. I show the blurred image, extracted highs, and sharpened outputs for different amounts.
+    I sharpen by adding a scaled high-frequency component: <code>sharp = img + a·(img − G*img)</code>. I show the blurred image, and sharpened outputs for different amounts.
     I also blur a sharp image and try to recover it; sharpening boosts edges but cannot restore lost detail perfectly.
   </p>
-  <div class="row"><div class="cap"><h3>Taj — blur/highs/sharpened</h3></div><img class="wide-xl" src="./media/part2_1_taj.png" alt="part 2.1 taj"></div>
-  <div class="row"><div class="cap"><h3>Custom — blur/highs/sharpened</h3></div><img class="wide-xl" src="./media/part2_1_custom.png" alt="part 2.1 custom"></div>
+  <div class="row"><div class="cap"><h3>Taj — blur/sharpened</h3></div><img class="wide-xl" src="./media/part2_1_taj.png" alt="part 2.1 taj"></div>
+  <div class="row"><div class="cap"><h3>Custom — blur/sharpened</h3></div><img class="wide-xl" src="./media/part2_1_custom.png" alt="part 2.1 custom"></div>
 
   <h2>Part 2.2: Hybrid Images</h2>
   <p>
     I align pairs, low-pass one image and high-pass the other, then add. At close range you see high frequencies; from far away, low frequencies dominate.
     I visualize FFT log-magnitudes to show how filtering redistributes energy.
   </p>
-  <div class="row"><div class="cap"><h3>Derek + Nutmeg — pipeline</h3></div><img src="./media/part2_2_dn_pipeline.png" alt="DN pipeline"></div>
-  <div class="row"><div class="cap"><h3>Hybrid results</h3></div><img src="./media/part2_2_hybrids.png" alt="hybrids"></div>
+
+  <!-- Bigger Derek + Nutmeg pipeline -->
+  <div class="row center">
+    <div class="cap"><h3>Derek + Nutmeg — pipeline</h3></div>
+  </div>
+  <div class="row center">
+    <img class="wide-xxl" src="./media/part2_2_dn_pipeline.png" alt="DN pipeline (large)">
+  </div>
+
+  <!-- Two large hybrid results -->
+  <div class="row center">
+    <div class="cap"><h3>Hybrid results</h3><small>Two examples shown large</small></div>
+  </div>
+  <div class="two-big">
+    <img src="./media/part2_2_hybrid_A.png" alt="Hybrid A (large)">
+    <img src="./media/part2_2_hybrid_B.png" alt="Hybrid B (large)">
+  </div>
 
   <h2>Part 2.3: Gaussian & Laplacian Stacks</h2>
   <p>
