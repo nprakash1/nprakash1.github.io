@@ -56,27 +56,20 @@
   <section id="part1">
     <h2>Part 1 — Fun with Filters</h2>
 
-    <h3>1.1 Convolutions from Scratch</h3>
-    <p>
-      I implemented convolution twice: a four-loop baseline and a faster two-loop version using block multiply–sum.
-      Zero padding keeps output size equal to input but slightly darkens borders.
-      Results numerically match <code>scipy.signal.convolve2d</code> with <code>boundary='fill'</code>.
-      On my selfie, the 9×9 box filter smooths texture, while Dx/Dy highlight strong transitions.
-    </p>
-    <div class="grid g3">
-      <figure class="card">
-        <img src="./media/part1_1_selfie_gray.png" alt="Selfie grayscale">
-        <figcaption>Input selfie (grayscale)</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part1_1_box9x9.png" alt="Box filter result">
-        <figcaption>9×9 box-filtered</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part1_1_dx_dy.png" alt="Dx Dy">
-        <figcaption>Dx / Dy responses</figcaption>
-      </figure>
+  <h2 id="part1-1">Part 1.1: Convolutions from Scratch</h2>
+  <p>
+    I implemented convolution (4-loop → 2-loop), zero padding, and compared with
+    <code>scipy.signal.convolve2d</code>. Below is a single summary figure showing
+    the grayscale input, 9×9 box-filtered result, and finite differences (Dx, Dy).
+  </p>
+  
+  <div class="row">
+    <div class="cap">
+      <h3>Part 1.1 Summary</h3>
+      <small>Gray • Box 9×9 • Dx • Dy</small>
     </div>
+    <img src="./media/part1_1_summary.png" alt="Part 1.1 summary panel">
+  </div>
 
     <h3>1.2 Finite Difference Operator</h3>
     <p>
