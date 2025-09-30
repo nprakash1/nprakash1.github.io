@@ -1,68 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8" />
-  <title>CS180 Project 2 — Fun with Filters and Frequencies</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project 2 — Fun with Filters and Frequencies (CS180)</title>
   <style>
-    :root{
-      --ink:#222; --muted:#666; --brand:#005fa3; --brand-2:#007acc; --paper:#fdfdfd; --panel:#f7fbff;
-      --card:#fff; --rule:#e6eef7;
-    }
-    *{box-sizing:border-box}
-    body{font-family: "Segoe UI", Arial, sans-serif; margin:28px; color:var(--ink); background:var(--paper); line-height:1.6}
-    h1{font-size:2.2rem; text-align:center; margin:0 0 22px}
-    header .meta{display:flex; gap:12px; justify-content:center; color:var(--muted); font-size:.95rem; margin-bottom:22px}
-    h2{margin:38px 0 12px; padding:8px 12px; border-left:6px solid var(--brand-2); background:linear-gradient(90deg, var(--panel), #fff); border-radius:6px; color:var(--brand)}
-    h3{margin:18px 0 8px}
-    p{margin:10px 0}
-    .grid{display:grid; gap:12px}
-    .g2{grid-template-columns: repeat(2, minmax(0,1fr))}
-    .g3{grid-template-columns: repeat(3, minmax(0,1fr))}
-    .g4{grid-template-columns: repeat(4, minmax(0,1fr))}
-    .card{background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:12px}
-    figure{margin:0; display:flex; flex-direction:column; align-items:center}
-    figcaption{font-size:.9rem; color:var(--muted); margin-top:6px}
-    img{max-width:100%; height:auto; border-radius:8px; border:1px solid #ddd; box-shadow:0 1px 4px rgba(0,0,0,.08)}
-    code{background:#f6f8fa; border:1px solid #eaeef2; padding:.1rem .35rem; border-radius:5px}
-    .row{display:flex; flex-wrap:wrap; gap:12px}
-    .kv{display:flex; flex-wrap:wrap; gap:6px 18px; color:var(--muted); font-size:.95rem}
-    .note{font-size:.95rem; color:var(--muted)}
-    .footer{margin:36px 0 12px; text-align:center; color:var(--muted)}
-    @media (max-width:900px){ .g3,.g4{grid-template-columns: repeat(2, minmax(0,1fr))} }
-    @media (max-width:640px){ .g2,.g3,.g4{grid-template-columns: 1fr} body{margin:18px} }
+    body { font-family: "Segoe UI", Arial, sans-serif; margin: 30px; line-height: 1.6; background:#fdfdfd; color:#333; }
+    h1 { text-align: center; margin-bottom: 25px; font-size: 2.2em; color:#222; letter-spacing: .5px; }
+    h2 { margin-top: 36px; padding-left: 12px; font-size: 1.5em; font-weight: 600; color:#005fa3;
+         border-left: 6px solid #007acc; background: linear-gradient(to right, #f0f8ff, #ffffff);
+         border-radius: 4px; padding-top: 6px; padding-bottom: 6px; }
+    h3 { margin: 6px 0 2px; }
+    small { display:block; font-size:.85em; color:#555; margin-top: 2px; }
+    .row { display:flex; flex-wrap: wrap; align-items: center; margin: 8px 0 18px; }
+    .cap { min-width: 260px; max-width: 360px; }
+    img { max-width: 320px; border: 2px solid #ddd; border-radius: 8px; margin: 10px; box-shadow: 2px 2px 6px rgba(0,0,0,0.15); transition: transform .2s ease; }
+    img:hover { transform: scale(1.02); }
+    .back a { display:inline-block; margin-top: 28px; text-decoration:none; color:#fff; background:#007acc; padding: 8px 14px; border-radius:6px; font-weight:500; }
+    .back a:hover { background:#005fa3; }
+    code { background:#f3f6fa; padding: 1px 4px; border-radius:4px; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>CS180 Project 2 — Fun with Filters and Frequencies</h1>
-    <div class="meta">
-      <span>Programming Project #2 (CS180 only)</span>
-      <span>Due: Sep 26, 2025</span>
-    </div>
-  </header>
+  <h1>Project 2 — Fun with Filters and Frequencies (CS180)</h1>
 
-  <section id="overview">
-    <h2>Overview</h2>
-    <p>
-      This project explores linear filtering, edge detection, and frequency-based image manipulations.
-      Part 1 builds convolution intuition via finite differences and the Derivative of Gaussian.
-      Part 2 applies these ideas to unsharp masking, hybrid images, and multi-resolution blending (Gaussian/Laplacian stacks).
-      Alignment, cutoff choices, and mask design strongly influence visual quality.
-    </p>
-  </section>
+  <h2>Overview</h2>
+  <p>
+    This project explores how linear filters and frequency representations shape images.
+    I first implement convolution from scratch and finite-difference edges. Then I use
+    Gaussian/DoG filters to denoise gradients. In Part 2, I apply unsharp masking to
+    enhance high frequencies, build hybrid images that mix low/high bands, and finish
+    with multiresolution blending using Gaussian/Laplacian stacks.
+  </p>
 
-  <!-- ===================== Part 1 ===================== -->
-  <section id="part1">
-    <h2>Part 1 — Fun with Filters</h2>
-
+  <!-- ===================== Part 1.1 ===================== -->
   <h2 id="part1-1">Part 1.1: Convolutions from Scratch</h2>
   <p>
-    I implemented convolution (4-loop → 2-loop), zero padding, and compared with
-    <code>scipy.signal.convolve2d</code>. Below is a single summary figure showing
-    the grayscale input, 9×9 box-filtered result, and finite differences (Dx, Dy).
+    I implemented convolution with four loops, then optimized to two loops with NumPy slicing,
+    and compared outputs to <code>scipy.signal.convolve2d</code>. Zero padding is used so sizes
+    match. The single panel below summarizes the grayscale input, 9×9 box-filtered result,
+    and finite differences in x/y for my selfie.
   </p>
-  
   <div class="row">
     <div class="cap">
       <h3>Part 1.1 Summary</h3>
@@ -71,203 +48,122 @@
     <img src="./media/part1_1_summary.png" alt="Part 1.1 summary panel">
   </div>
 
-    <h3>1.2 Finite Difference Operator</h3>
-    <p>
-      I convolved Cameraman with <code>Dx=[1,-1]</code> and <code>Dy=[1;-1]</code> and formed magnitude <code>√(gx²+gy²)</code>.
-      A threshold τ selects edges; I chose a value that retained object boundaries while suppressing noise.
-      Finite differences produce thin, sometimes noisy edges in flat regions.
-      Careful τ tuning balances completeness and denoising.
-    </p>
-    <div class="grid g4">
-      <figure class="card">
-        <img src="./media/part1_2_cam_gx.png" alt="gx">
-        <figcaption>∂I/∂x</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part1_2_cam_gy.png" alt="gy">
-        <figcaption>∂I/∂y</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part1_2_cam_mag.png" alt="magnitude">
-        <figcaption>Gradient magnitude</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part1_2_cam_edges.png" alt="edges">
-        <figcaption>Binarized edges (τ)</figcaption>
-      </figure>
-    </div>
+  <!-- ===================== Part 1.2 ===================== -->
+  <h2 id="part1-2">Part 1.2: Finite Difference Operator</h2>
+  <p>
+    I computed partial derivatives (Dx, Dy) on the Cameraman image with
+    <code>convolve2d</code>, then formed gradient magnitude and thresholded to get an
+    edge map. Lower thresholds capture more detail but increase noise, while higher
+    thresholds suppress both. I chose a mid value to keep dominant structures visible.
+  </p>
+  <div class="row">
+    <div class="cap"><h3>Finite Differences</h3><small>Cameraman — Dx, Dy, |∇|, edges</small></div>
+    <img src="./media/part1_2_dx.png" alt="Dx">
+    <img src="./media/part1_2_dy.png" alt="Dy">
+    <img src="./media/part1_2_mag.png" alt="Gradient magnitude">
+    <img src="./media/part1_2_edges.png" alt="Binarized edges">
+  </div>
 
-    <h3>1.3 Derivative of Gaussian (DoG)</h3>
-    <p>
-      Pre-smoothing with a Gaussian reduces noise before computing derivatives.
-      DoG applies the derivative to the kernel, achieving blur+diff in a single convolution.
-      My DoG gradients match the two-step blur→diff results within floating-point error.
-      Edges are cleaner and less noisy than plain finite differences.
-    </p>
-    <div class="grid g3">
-      <figure class="card">
-        <img src="./media/part1_3_dogx.png" alt="DoGx">
-        <figcaption>DoG<sub>x</sub> kernel</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part1_3_dogy.png" alt="DoGy">
-        <figcaption>DoG<sub>y</sub> kernel</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part1_3_dog_edges.png" alt="DoG edges">
-        <figcaption>DoG edges vs blur→diff</figcaption>
-      </figure>
-    </div>
-  </section>
+  <!-- ===================== Part 1.3 ===================== -->
+  <h2 id="part1-3">Part 1.3: Derivative of Gaussian (DoG)</h2>
+  <p>
+    I smoothed the image with a Gaussian and re-ran the edge pipeline, which reduced
+    speckle noise and isolated coherent contours. I also pre-convolved Dx/Dy with the
+    Gaussian to form DoG filters that match the two-step result. The DoG approach is
+    efficient and yields similar edges with less noise.
+  </p>
+  <div class="row">
+    <div class="cap"><h3>DoG Filters & Results</h3><small>DoG<sub>x</sub>, DoG<sub>y</sub>, blurred, edges</small></div>
+    <img src="./media/part1_3_dogx.png" alt="DoGx">
+    <img src="./media/part1_3_dogy.png" alt="DoGy">
+    <img src="./media/part1_3_blurred.png" alt="Blurred">
+    <img src="./media/part1_3_edges.png" alt="Edges (DoG)">
+  </div>
 
-  <!-- ===================== Part 2 ===================== -->
-  <section id="part2">
-    <h2>Part 2 — Applications</h2>
+  <!-- ===================== Part 2.1 ===================== -->
+  <h2 id="part2-1">Part 2.1: Image “Sharpening” (Unsharp Mask)</h2>
+  <p>
+    Unsharp masking adds a scaled high-frequency residual <code>(I − G∗I)</code> back to
+    the image to increase perceived sharpness. I show Taj at different amounts, a blurred
+    sharp image re-sharpened, and the high-frequency visualization. Too much gain amplifies
+    noise and halos; moderate values preserve detail naturally.
+  </p>
+  <div class="row">
+    <div class="cap"><h3>Taj — Sharpening</h3><small>Original, a=0.5, a=1.0, a=1.5</small></div>
+    <img src="./media/part2_1_taj_orig.png" alt="Taj original">
+    <img src="./media/part2_1_taj_a05.png" alt="Taj a=0.5">
+    <img src="./media/part2_1_taj_a10.png" alt="Taj a=1.0">
+    <img src="./media/part2_1_taj_a15.png" alt="Taj a=1.5">
+  </div>
+  <div class="row">
+    <div class="cap"><h3>Sharpening Analysis</h3><small>Blurred, high-freq (viz), re-sharpened</small></div>
+    <img src="./media/part2_1_blurred.png" alt="Blurred">
+    <img src="./media/part2_1_highfreq.png" alt="High frequency viz">
+    <img src="./media/part2_1_sharpened.png" alt="Re-sharpened">
+  </div>
 
-    <h3>2.1 Image “Sharpening” (Unsharp Mask)</h3>
-    <p>
-      Unsharp mask adds scaled high frequencies: <code>I + α·(I − Gσ*I)</code>.
-      Increasing α sharpens edges but can introduce halos and amplify noise; larger σ gives broader, more global crispness.
-      For Taj and another image, I show blurred, high-frequency, and sharpened panels at multiple α.
-      Blurring a sharp image then sharpening recovers contrast but cannot fully restore lost fine detail.
-    </p>
-    <div class="grid g3">
-      <figure class="card">
-        <img src="./media/part2_1_taj_blur.png" alt="Taj blur">
-        <figcaption>Taj: blurred</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_1_taj_hi.png" alt="Taj high freq">
-        <figcaption>Taj: high frequencies</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_1_taj_sharp.png" alt="Taj sharpened">
-        <figcaption>Taj: sharpened (α variants)</figcaption>
-      </figure>
-    </div>
-    <div class="grid g3">
-      <figure class="card">
-        <img src="./media/part2_1_other_orig.png" alt="Other orig">
-        <figcaption>Other image: original</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_1_other_blur.png" alt="Other blur">
-        <figcaption>Blurred then sharpened</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_1_other_compare.png" alt="Compare">
-        <figcaption>Compare to original (still softer)</figcaption>
-      </figure>
-    </div>
+  <!-- ===================== Part 2.2 ===================== -->
+  <h2 id="part2-2">Part 2.2: Hybrid Images</h2>
+  <p>
+    A hybrid image sums a low-pass version of one image with a high-pass of another.
+    Up close, the high frequencies dominate; at a distance, the low frequencies remain.
+    I aligned pairs with clicked keypoints, tuned Gaussian sigmas per band, and visualized
+    FFT log-magnitudes for my favorite hybrid.
+  </p>
+  <div class="row">
+    <div class="cap"><h3>Derek + Nutmeg (Process)</h3><small>Inputs, filtered bands, FFTs, final</small></div>
+    <img src="./media/part2_2_dn_inputs.png" alt="Derek/Nutmeg inputs">
+    <img src="./media/part2_2_dn_filtered.png" alt="Low/High bands">
+    <img src="./media/part2_2_dn_ffts.png" alt="FFTs">
+    <img src="./media/part2_2_dn_hybrid.png" alt="Hybrid">
+  </div>
+  <div class="row">
+    <div class="cap"><h3>Hybrid #2</h3><small>Inputs and final</small></div>
+    <img src="./media/part2_2_h2_inputs.png" alt="Hybrid 2 inputs">
+    <img src="./media/part2_2_h2_out.png" alt="Hybrid 2 output">
+  </div>
+  <div class="row">
+    <div class="cap"><h3>Hybrid #3</h3><small>Inputs and final</small></div>
+    <img src="./media/part2_2_h3_inputs.png" alt="Hybrid 3 inputs">
+    <img src="./media/part2_2_h3_out.png" alt="Hybrid 3 output">
+  </div>
 
-    <h3>2.2 Hybrid Images</h3>
-    <p>
-      A hybrid combines low-pass A with high-pass B so perception changes with viewing distance.
-      I manually aligned images via two landmarks (scale/rotation) to avoid double features.
-      Cutoffs (σ<sub>low</sub>, σ<sub>high</sub>) were tuned to balance near-view detail and far-view clarity.
-      FFT log-magnitude plots confirm band separation and the composite spectrum.
-    </p>
-    <div class="grid g4">
-      <figure class="card">
-        <img src="./media/part2_2_A.png" alt="A">
-        <figcaption>Low-pass source (A)</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_2_B.png" alt="B">
-        <figcaption>High-pass source (B)</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_2_filtered.png" alt="filtered">
-        <figcaption>Filtered A/B</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_2_hybrid.png" alt="hybrid">
-        <figcaption>Hybrid result</figcaption>
-      </figure>
-    </div>
-    <p class="note">Additional hybrids (orig + result) are shown in the gallery section of the page.</p>
+  <!-- ===================== Part 2.3 ===================== -->
+  <h2 id="part2-3">Part 2.3: Gaussian & Laplacian Stacks</h2>
+  <p>
+    I built stacks without downsampling by repeatedly blurring (Gaussian) and differencing
+    adjacent levels (Laplacian). Applying this to Apple/Orange reproduces Szelski Fig. 3.42:
+    level-wise contributions at high/medium/low frequencies, masked bases, and the final
+    multi-band reconstruction. The stacks are also reused for blending.
+  </p>
+  <div class="row">
+    <div class="cap"><h3>Apple/Orange — Fig. 3.42</h3><small>(a–l) reconstruction panels</small></div>
+    <img src="./media/part2_3_fig342.png" alt="Figure 3.42 panels">
+  </div>
 
-    <h3>2.3 Gaussian & Laplacian Stacks</h3>
-    <p>
-      Stacks repeatedly blur without downsampling, keeping full resolution at every level.
-      Laplacian levels isolate detail bands from fine (L₀) to coarse (deep levels), with the top Gaussian holding overall color/illumination.
-      For Apple/Orange, I visualize G₀…G₅ and L₀…L₄+G₅ and reproduce contributions like Szelski Fig. 3.42.
-      These stacks are the basis for smooth, frequency-aware blending.
-    </p>
-    <div class="grid g3">
-      <figure class="card">
-        <img src="./media/part2_3_gaussian_grid.png" alt="Gaussian stack">
-        <figcaption>Gaussian stack (Apple/Orange)</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_3_laplacian_grid.png" alt="Laplacian stack">
-        <figcaption>Laplacian stack</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_3_fig342.png" alt="Fig 3.42 recreation">
-        <figcaption>Fig. 3.42 (a–l) recreation</figcaption>
-      </figure>
-    </div>
+  <!-- ===================== Part 2.4 ===================== -->
+  <h2 id="part2-4">Part 2.4: Multiresolution Blending (Oraple)</h2>
+  <p>
+    I blend images with a smoothed mask at each level: multiply the mask’s Gaussian stack
+    with corresponding Laplacian levels and sum with a blended base. Vertical/horizontal
+    masks create clean halves, while irregular masks produce natural seams around shapes.
+    I include Apple/Orange and two custom pairs.
+  </p>
+  <div class="row">
+    <div class="cap"><h3>Oraple — Vertical/Horizontal/Irregular</h3><small>Inputs, masks, blends</small></div>
+    <img src="./media/part2_4_apple.png" alt="Apple/Orange blend">
+    <img src="./media/part2_4_morning_night.png" alt="Morning/Night blend">
+    <img src="./media/part2_4_mountain_waterfall.png" alt="Mountain/Waterfall blend">
+  </div>
 
-    <h3>2.4 Multiresolution Blending (Oraple)</h3>
-    <p>
-      For each level i, I blend Laplacians via <code>Lᵢ = Mᵢ·Lᵢ(A) + (1−Mᵢ)·Lᵢ(B)</code> using the mask’s Gaussian stack Mᵢ, then reconstruct.
-      Coarse levels use blurrier masks, creating wide smooth transitions; fine levels restrict seams to tiny regions.
-      Vertical/horizontal seams and an irregular mask show clean, nearly invisible boundaries.
-      Results include Apple+Orange plus two custom blends with a circular mask.
-    </p>
-    <div class="grid g3">
-      <figure class="card">
-        <img src="./media/part2_4_inputs_masks.png" alt="Inputs & masks">
-        <figcaption>Inputs & masks (vertical/horizontal/irregular)</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_4_oraple_vh.png" alt="Oraple seams">
-        <figcaption>Oraple (vertical & horizontal seams)</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/part2_4_irregular.png" alt="Irregular">
-        <figcaption>Irregular mask blend</figcaption>
-      </figure>
-    </div>
-  </section>
+  <h2>Reflection</h2>
+  <p>
+    The main insight was how frequency bands control perception: sharpening and hybrids
+    rely on boosting or isolating bands, while multiresolution blending hides seams by
+    smoothing masks per level. Good alignment matters a lot for hybrids. Choosing sigmas
+    and mask shapes gives strong creative control.
+  </p>
 
-  <!-- ===================== Reflection ===================== -->
-  <section id="reflection">
-    <h2>Reflection</h2>
-    <p>
-      I learned how classic linear filters explain edges, sharpening, and blending in one framework.
-      Hybrid images showed how perception depends on frequency and alignment; small misalignments ruin the effect.
-      Unsharp masking is powerful but limited—once blur removes detail, sharpening can’t truly restore it.
-      Multiresolution blending felt “seamless” once masks were smoothed per level, confirming the value of frequency-aware seams.
-    </p>
-  </section>
-
-  <section id="gallery">
-    <h2>Gallery (Selected Results)</h2>
-    <div class="grid g4">
-      <figure class="card">
-        <img src="./media/hybrid_1.png" alt="Hybrid 1">
-        <figcaption>Hybrid #1</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/hybrid_2.png" alt="Hybrid 2">
-        <figcaption>Hybrid #2</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/blend_1.png" alt="Blend 1">
-        <figcaption>Blend with vertical seam</figcaption>
-      </figure>
-      <figure class="card">
-        <img src="./media/blend_2.png" alt="Blend 2">
-        <figcaption>Blend with irregular mask</figcaption>
-      </figure>
-    </div>
-    <p class="note">All figures kept under ~0.8&nbsp;MB per the project guidance.</p>
-  </section>
-
-  <footer class="footer">
-    <p>© 2025 — CS180: Intro to Computer Vision and Computational Photography</p>
-  </footer>
+  <p class="back"><a href="../index.html">⬅ Back to main page</a></p>
 </body>
 </html>
