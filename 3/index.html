@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>CS180 Project 2 — Fun with Filters & Frequencies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --cal-blue:#003262; --cal-gold:#FDB515; --link:#007acc; --link-h:#005fa3;
+      --panel:#f0f8ff; --bg:#fdfdfd; --text:#333; --muted:#555; --rule:#e7e7e7;
+    }
+    html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:"Segoe UI", Arial, sans-serif; line-height:1.6}
+    main{max-width:1100px; margin:30px auto; padding:0 24px}
+    header{display:flex; align-items:center; gap:18px; margin-bottom:18px}
+    header img.logo{height:54px}
+    header .titles h1{margin:0; font-size:2.1em; letter-spacing:.5px; color:#222}
+    header .titles .sub{color:var(--muted); font-size:.95em}
+    h2{
+      margin-top:40px; padding:8px 12px; font-size:1.45em; font-weight:700; color:#0a3d62;
+      border-left:6px solid var(--link); background:linear-gradient(to right, var(--panel), #fff); border-radius:4px;
+    }
+    h3{margin:18px 0 8px; font-size:1.15em}
+    small{display:block; font-size:.86em; color:var(--muted); margin-top:4px}
+    a{color:var(--link); text-decoration:none} a:hover{color:var(--link-h)}
+    .toc{background:#fff; border:1px solid var(--rule); border-radius:8px; padding:12px 16px}
+    .toc h3{margin:0 0 6px}
+    .toc ul{margin:8px 0 0 18px}
+    .row{display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start}
+    figure{margin:8px 8px 4px 0}
+    figure img{max-width:320px; border:2px solid #ddd; border-radius:8px; box-shadow:2px 2px 6px rgba(0,0,0,.12); display:block}
+    figcaption{font-size:.88em; color:var(--muted); margin-top:6px; max-width:320px}
+    .panel{background:#fff; border:1px solid var(--rule); border-radius:10px; padding:14px 16px; margin:12px 0}
+    .code{background:#0b1020; color:#e5eaff; border-radius:8px; padding:14px; overflow:auto; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em}
+    .grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:12px}
+    .badge{display:inline-block; background:var(--cal-gold); color:#000; padding:2px 8px; border-radius:999px; font-size:.78em; margin-left:8px}
+    hr{border:none; border-top:1px solid var(--rule); margin:28px 0}
+    .footer{margin:36px 0 20px; color:var(--muted); font-size:.9em}
+  </style>
+</head>
+<body>
+<main>
+
+  <!-- HEADER -->
+  <header>
+    <img class="logo" src="./media/berkeley_seal.png" alt="UC Berkeley logo" />
+    <div class="titles">
+      <h1>Programming Project #2: Fun with Filters and Frequencies</h1>
+      <div class="sub">
+        CS180: Intro to Computer Vision &amp; Computational Photography
+        <span class="badge">CS180 Only</span><br/>
+        Due: 11:59pm Fri Sep 26, 2025 — <a href="https://cal-cs180.github.io/fa25/hw/gh-pages.html" target="_blank">Submission Guidelines</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVERVIEW -->
+  <h2 id="overview">Overview</h2>
+  <p>
+    In this project I implemented core filtering operations (convolution, finite differences, Gaussian &amp; DoG),
+    explored frequency-domain intuition via unsharp masking (image sharpening), created hybrid images (Oliva et&nbsp;al., SIGGRAPH&nbsp;2006),
+    and built Gaussian/Laplacian stacks to perform multi-resolution blending (Burt &amp; Adelson, 1983).
+    Below are results, brief methods, and observations for each subsection.
+  </p>
+
+  <!-- TOC -->
+  <div class="panel toc">
+    <h3>Contents</h3>
+    <ul>
+      <li><a href="#part11">Part 1.1 — Convolutions from Scratch</a></li>
+      <li><a href="#part12">Part 1.2 — Finite Difference Operator</a></li>
+      <li><a href="#part13">Part 1.3 — Derivative of Gaussian (DoG)</a></li>
+      <li><a href="#part21">Part 2.1 — Image “Sharpening” (Unsharp Mask)</a></li>
+      <li><a href="#part22">Part 2.2 — Hybrid Images</a></li>
+      <li><a href="#part23">Part 2.3 — Gaussian &amp; Laplacian Stacks</a></li>
+      <li><a href="#part24">Part 2.4 — Multiresolution Blending (Oraple)</a></li>
+      <li><a href="#takeaways">Most Important Thing I Learned</a></li>
+    </ul>
+  </div>
+
+  <!-- PART 1.1 -->
+  <h2 id="part11">Part 1.1 — Convolutions from Scratch</h2>
+  <div class="panel">
+    <p><strong>Task:</strong> Implement convolution with four loops, then two loops (vectorized inner sum), add zero padding, and compare with <code>scipy.signal.convolve2d</code>. Show runtime notes and boundary handling.</p>
+    <div class="code"><pre><code>// paste your core 4-loop and 2-loop NumPy implementations here
+// include a tiny timing snippet comparing to convolve2d
+</code></pre></div>
+  </div>
+  <div class="row">
+    <figure>
+      <img src="./media/self_gray.png" alt="grayscale selfie">
+      <figcaption>Grayscale input.</figcaption>
+    </figure>
+    <figure>
+      <img src="./media/self_box9x9.png" alt="box filtered">
+      <figcaption>9×9 box filter (two-loop conv).</figcaption>
+    </figure>
+    <figure>
+      <img src="./media/self_compare.png" alt="comparison">
+      <figcaption>My conv vs. SciPy (<em>difference visualization</em>).</figcaption>
+    </figure>
+  </div>
+
+  <!-- PART 1.2 -->
+  <h2 id="part12">Part 1.2 — Finite Difference Operator</h2>
+  <p>Convolve Cameraman with <code>D<sub>x</sub> = [[1,-1]]</code> and <code>D<sub>y</sub> = [[1],[-1]]</code>, compute gradient magnitude, and binarize with a chosen threshold.</p>
+  <div class="row">
+    <figure><img src="./media/cameraman.png" alt="cameraman"><figcaption>Original.</figcaption></figure>
+    <figure><img src="./media/cam_dx.png" alt="dx"><figcaption>∂I/∂x.</figcaption></figure>
+    <figure><img src="./media/cam_dy.png" alt="dy"><figcaption>∂I/∂y.</figcaption></figure>
+    <figure><img src="./media/cam_gradmag.png" alt="grad magnitude"><figcaption>Gradient magnitude.</figcaption></figure>
+    <figure><img src="./media/cam_edges.png" alt="edges"><figcaption>Thresholded edge map (t = …).</figcaption></figure>
+  </div>
+
+  <!-- PART 1.3 -->
+  <h2 id="part13">Part 1.3 — Derivative of Gaussian (DoG)</h2>
+  <p>Smooth with Gaussian (k=9, σ=2), then take derivatives; also build DoG filters by convolving the Gaussian with <code>D<sub>x</sub>, D<sub>y</sub></code> and compare results.</p>
+  <div class="row">
+    <figure><img src="./media/dog_x.png" alt="DoGx"><figcaption>DoG<sub>x</sub> kernel.</figcaption></figure>
+    <figure><img src="./media/dog_y.png" alt="DoGy"><figcaption>DoG<sub>y</sub> kernel.</figcaption></figure>
+    <figure><img src="./media/cam_blur.png" alt="blurred"><figcaption>Blurred input (G * I).</figcaption></figure>
+    <figure><img src="./media/cam_edges_dog.png" alt="edges dog"><figcaption>Edge map via DoG once.</figcaption></figure>
+    <figure><img src="./media/cam_edges_blurthen.png" alt="edges 2step"><figcaption>Edge map via blur→diff.</figcaption></figure>
+  </div>
+
+  <!-- PART 2.1 -->
+  <h2 id="part21">Part 2.1 — Image “Sharpening” (Unsharp Mask)</h2>
+  <div class="panel">
+    <p><strong>Unsharp mask:</strong> <code>Sharpen = I + α (I - Gσ * I)</code>. Show Taj and one additional image; also blur a sharp image then try to recover it.</p>
+  </div>
+  <div class="grid">
+    <figure><img src="./media/taj_orig.jpg" alt="taj"><figcaption>Taj — original.</figcaption></figure>
+    <figure><img src="./media/taj_blur.jpg" alt="taj blur"><figcaption>Taj — Gaussian blur.</figcaption></figure>
+    <figure><img src="./media/taj_high.jpg" alt="taj highs"><figcaption>Taj — high frequencies (viz).</figcaption></figure>
+    <figure><img src="./media/taj_sharp_a05.jpg" alt="taj 0.5"><figcaption>Taj — α=0.5.</figcaption></figure>
+    <figure><img src="./media/taj_sharp_a10.jpg" alt="taj 1.0"><figcaption>Taj — α=1.0.</figcaption></figure>
+    <figure><img src="./media/taj_sharp_a15.jpg" alt="taj 1.5"><figcaption>Taj — α=1.5.</figcaption></figure>
+  </div>
+  <div class="row">
+    <figure><img src="./media/extra_orig.jpg" alt="extra"><figcaption>Extra image — original.</figcaption></figure>
+    <figure><img src="./media/extra_blurred.jpg" alt="extra blur"><figcaption>Blurred (σ=?, k=?).</figcaption></figure>
+    <figure><img src="./media/extra_sharpened.jpg" alt="extra sharp"><figcaption>Sharpened (α=?, σ=?).</figcaption></figure>
+  </div>
+
+  <!-- PART 2.2 -->
+  <h2 id="part22">Part 2.2 — Hybrid Images</h2>
+  <div class="panel">
+    <p>Create three hybrids (Derek+Nutmeg + two custom). For one favorite, include FFT analysis of inputs, filtered components, and final hybrid.</p>
+  </div>
+
+  <h3>Derek + Nutmeg (favorite)</h3>
+  <div class="row">
+    <figure><img src="./media/derek_aligned.jpg" alt="derek"><figcaption>A (low-pass source), aligned.</figcaption></figure>
+    <figure><img src="./media/nutmeg_aligned.jpg" alt="nutmeg"><figcaption>B (high-pass source), aligned.</figcaption></figure>
+    <figure><img src="./media/hybrid_dn.jpg" alt="hybrid"><figcaption>Hybrid result.</figcaption></figure>
+  </div>
+  <div class="grid">
+    <figure><img src="./media/fft_A.png" alt="fft A"><figcaption>log |FFT(A)|</figcaption></figure>
+    <figure><img src="./media/fft_Alo.png" alt="fft Alo"><figcaption>log |FFT(A<sub>lo</sub>)|</figcaption></figure>
+    <figure><img src="./media/fft_B.png" alt="fft B"><figcaption>log |FFT(B)|</figcaption></figure>
+    <figure><img src="./media/fft_Bhi.png" alt="fft Bhi"><figcaption>log |FFT(B<sub>hi</sub>)|</figcaption></figure>
+    <figure><img src="./media/fft_H.png" alt="fft H"><figcaption>log |FFT(H)|</figcaption></figure>
+  </div>
+
+  <h3>Custom Hybrid #1</h3>
+  <div class="row">
+    <figure><img src="./media/h1_A.jpg" alt="A1"><figcaption>Low-pass input.</figcaption></figure>
+    <figure><img src="./media/h1_B.jpg" alt="B1"><figcaption>High-pass input.</figcaption></figure>
+    <figure><img src="./media/h1_H.jpg" alt="H1"><figcaption>Hybrid.</figcaption></figure>
+  </div>
+
+  <h3>Custom Hybrid #2</h3>
+  <div class="row">
+    <figure><img src="./media/h2_A.jpg" alt="A2"><figcaption>Low-pass input.</figcaption></figure>
+    <figure><img src="./media/h2_B.jpg" alt="B2"><figcaption>High-pass input.</figcaption></figure>
+    <figure><img src="./media/h2_H.jpg" alt="H2"><figcaption>Hybrid.</figcaption></figure>
+  </div>
+
+  <!-- PART 2.3 -->
+  <h2 id="part23">Part 2.3 — Gaussian &amp; Laplacian Stacks</h2>
+  <p>Stacks (no downsampling) for Apple/Orange; recreate Szeliski Fig 3.42 (a–l).</p>
+  <div class="grid">
+    <figure><img src="./media/stack_gauss_level0.png" alt="G0"><figcaption>Gaussian L0.</figcaption></figure>
+    <figure><img src="./media/stack_gauss_level2.png" alt="G2"><figcaption>Gaussian L2.</figcaption></figure>
+    <figure><img src="./media/stack_gauss_level4.png" alt="G4"><figcaption>Gaussian L4.</figcaption></figure>
+    <figure><img src="./media/stack_lap_level0.png" alt="L0"><figcaption>Laplacian L0.</figcaption></figure>
+    <figure><img src="./media/stack_lap_level2.png" alt="L2"><figcaption>Laplacian L2.</figcaption></figure>
+    <figure><img src="./media/stack_lap_level4.png" alt="L4"><figcaption>Laplacian L4.</figcaption></figure>
+  </div>
+  <div class="row">
+    <figure><img src="./media/fig342_a.png" alt="a"><figcaption>(a)</figcaption></figure>
+    <figure><img src="./media/fig342_b.png" alt="b"><figcaption>(b)</figcaption></figure>
+    <figure><img src="./media/fig342_c.png" alt="c"><figcaption>(c)</figcaption></figure>
+    <figure><img src="./media/fig342_j.png" alt="j"><figcaption>(j)</figcaption></figure>
+    <figure><img src="./media/fig342_k.png" alt="k"><figcaption>(k)</figcaption></figure>
+    <figure><img src="./media/fig342_l.png" alt="l"><figcaption>(l) Final blend.</figcaption></figure>
+  </div>
+
+  <!-- PART 2.4 -->
+  <h2 id="part24">Part 2.4 — Multiresolution Blending (Oraple)</h2>
+  <p>Blend with a step mask (vertical/horizontal) and one irregular mask. Include at least two custom blends.</p>
+
+  <h3>Apple ⊕ Orange</h3>
+  <div class="row">
+    <figure><img src="./media/oraple_A.png" alt="apple"><figcaption>Apple.</figcaption></figure>
+    <figure><img src="./media/oraple_B.png" alt="orange"><figcaption>Orange.</figcaption></figure>
+    <figure><img src="./media/oraple_vert.png" alt="blend vert"><figcaption>Vertical seam blend.</figcaption></figure>
+    <figure><img src="./media/oraple_irregular.png" alt="blend irr"><figcaption>Irregular mask blend.</figcaption></figure>
+  </div>
+
+  <h3>Custom Blend #1</h3>
+  <div class="row">
+    <figure><img src="./media/custom1_A.png" alt="A"><figcaption>Input A.</figcaption></figure>
+    <figure><img src="./media/custom1_B.png" alt="B"><figcaption>Input B.</figcaption></figure>
+    <figure><img src="./media/custom1_mask.png" alt="mask"><figcaption>Mask (Gaussian stack applied).</figcaption></figure>
+    <figure><img src="./media/custom1_blend.png" alt="blend"><figcaption>Final blend.</figcaption></figure>
+  </div>
+
+  <h3>Custom Blend #2</h3>
+  <div class="row">
+    <figure><img src="./media/custom2_A.png" alt="A2"><figcaption>Input A.</figcaption></figure>
+    <figure><img src="./media/custom2_B.png" alt="B2"><figcaption>Input B.</figcaption></figure>
+    <figure><img src="./media/custom2_mask.png" alt="mask2"><figcaption>Mask.</figcaption></figure>
+    <figure><img src="./media/custom2_blend.png" alt="blend2"><figcaption>Final blend.</figcaption></figure>
+  </div>
+
+  <!-- TAKEAWAYS -->
+  <h2 id="takeaways">Most Important Thing I Learned</h2>
+  <div class="panel">
+    <p>
+      [Write 4–6 sentences on the key technical insight you gained (e.g., why Laplacian-band mixing
+      smooths seams, how cutoff selection affects hybrid dominance with distance, or how DoG approximates
+      Canny’s first stage).]
+    </p>
+  </div>
+
+  <hr/>
+  <div class="footer">
+    <div>© 2025 • CS180 • UC Berkeley</div>
+    <div><a href="../index.html">⬅ Back to main page</a></div>
+  </div>
+
+</main>
+</body>
+</html>
