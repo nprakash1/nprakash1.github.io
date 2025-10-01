@@ -18,13 +18,12 @@
     .wide-lg  { max-width: 1000px; }
     .wide-xl  { max-width: 1200px; }
     .wide-xxl { max-width: 1400px; }
-    .huge     { max-width: 1600px; } /* use for one-off extra-big images */
+    .huge     { max-width: 1600px; }
 
     .row { display:flex; flex-wrap: wrap; align-items: center; }
     .row.center { justify-content: center; }
     .cap { min-width: 260px; }
 
-    /* two-up hybrids — made bigger */
     .two-big { display:flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
     .two-big img { max-width: 900px; flex: 1 1 820px; }
 
@@ -90,7 +89,6 @@
     I visualize FFT log-magnitudes to show how filtering redistributes energy.
   </p>
 
-  <!-- Bigger Derek + Nutmeg pipeline -->
   <div class="row center">
     <div class="cap"><h3>Derek + Nutmeg — pipeline</h3></div>
   </div>
@@ -98,7 +96,6 @@
     <img class="wide-xxl" src="./media/part2_2_dn_pipeline.png" alt="DN pipeline (large)">
   </div>
 
-  <!-- Two large hybrid results; second one even bigger -->
   <div class="row center">
     <div class="cap"><h3>Hybrid results</h3><small>Two examples shown large</small></div>
   </div>
@@ -112,14 +109,12 @@
     I build stacks without downsampling: repeated Gaussian smoothing for the Gaussian stack and differences between levels for the Laplacian stack.
     The Laplacian bands isolate structures from fine to coarse, matching Szelski Fig. 3.42 behavior.
   </p>
-  <!-- Existing image made bigger -->
   <div class="row center">
     <div class="cap"><h3>Apple/Orange — stacks and levels</h3></div>
   </div>
   <div class="row center">
     <img class="wide-xxl" src="./media/part2_3_oraple_stacks.png" alt="stacks big">
   </div>
-  <!-- Room for one more image under Part 2.3 -->
   <div class="row center">
     <div class="cap"><h3>Additional stack visualization</h3><small>(optional second figure)</small></div>
   </div>
@@ -133,7 +128,15 @@
     I show vertical, horizontal, and irregular (circular) masks, plus two creative blends.
   </p>
   <div class="row"><div class="cap"><h3>Oraple blends (v/h/circle)</h3></div><img class="wide-xl" src="./media/part2_4_oraple_blends.png" alt="oraple blends"></div>
-  <div class="row"><div class="cap"><h3>Custom blends</h3></div><img class="wide-xl" src="./media/part2_4_custom.png" alt="custom blends"></div>
+
+  <!-- New: two-up layout for custom blends -->
+  <div class="row center">
+    <div class="cap"><h3>Custom blends</h3><small>Two examples shown large</small></div>
+  </div>
+  <div class="two-big">
+    <img src="./media/part2_4_custom_A.png" alt="custom blend A (large)">
+    <img src="./media/part2_4_custom_B.png" alt="custom blend B (large)">
+  </div>
 
   <h2>Most Important Lesson</h2>
   <p>
