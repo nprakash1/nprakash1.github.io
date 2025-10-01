@@ -27,6 +27,10 @@
     .two-big { display:flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
     .two-big img { max-width: 900px; flex: 1 1 820px; }
 
+    /* Code block styling */
+    pre { background:#0f172a; color:#e5e7eb; padding:14px 16px; border-radius:8px; overflow:auto; box-shadow: 2px 2px 6px rgba(0,0,0,0.15); }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 0.95em; }
+
     .back a { display:inline-block; margin-top:30px; text-decoration:none; color:#fff; background:#007acc; padding:8px 14px; border-radius:6px; font-weight:500; }
     .back a:hover { background:#005fa3; }
   </style>
@@ -46,8 +50,9 @@
     I implemented convolution with four loops and two loops (zero padding), then compared against <code>scipy.signal.convolve2d</code>. Below is a summary collage showing the original,
     box-filtered output, and comparisons to SciPy. This validates correctness before building more complex filters.
   </p>
-  <p><em>Runtime note:</em> Finite-difference filters (e.g., 1×2 / 2×1) are much faster than a 9×9 box filter because they do O(1) work per pixel.
+  <p><em>Runtime note:</em> Finite-difference filters (e.g., 1×2 / 2×1) are much faster than a 9×9 box filter because they do O(1) work per pixel vs. ~81 operations per pixel.
      In practice, kernel size and separability dominate speed, so tiny stencils feel instant while big, dense kernels are noticeably slower.</p>
+
   <div class="row">
     <div class="cap">
       <h3>Convolution summary</h3>
@@ -55,6 +60,7 @@
     </div>
     <img class="wide" src="./media/part1_1_summary.png" alt="Part 1.1 summary collage">
   </div>
+
   <div class="row">
     <div class="cap">
       <h3>Finite difference result</h3>
@@ -62,6 +68,28 @@
     </div>
     <img class="wide-xl" src="./media/part1_1_finite_diff.png" alt="Part 1.1 finite difference output">
   </div>
+
+  <!-- NEW: code snippet for Part 1.1 -->
+  <div class="row center">
+    <div class="cap"><h3>Code — numpy-only convolution snippets</h3><small>Four-loop &amp; two-loop conv + tiny stencils</small></div>
+  </div>
+  <pre><code>def q4(a,k):
+    H,W=a.shape; h,w=k.shape; k=np.flip(k); py,px=h//2,w//2
+    p=np.pad(a,((py,py),(px,px)),'constant'); o=np.zeros_like(a,np.float32)
+    for i in range(H):
+        for j in range(W):
+            o[i,j]=sum(k[m,n]*p[i+m,j+n] for m in range(h) for n in range(w))
+    return o
+
+def q2(a,k):
+    H,W=a.shape; h,w=k.shape; k=np.flip(k); py,px=h//2,w//2
+    p=np.pad(a,((py,py),(px,px)),'constant')
+    return np.stack([np.sum(p[i:i+h,j:j+w]*k) for i in range(H) for j in range(W)],0)\
+             .reshape(H,W).astype(np.float32)
+
+box = np.ones((9,9),np.float32)/81
+dx  = np.array([[1,-1]],np.float32)
+dy  = np.array([[1],[-1]],np.float32)</code></pre>
 
   <h2>Part 1.2: Finite Difference Operator</h2>
   <p>
@@ -94,7 +122,9 @@
   <h2>Part 2.2: Hybrid Images</h2>
   <p>
     I align pairs, low-pass one image and high-pass the other, then add. At close range you see high frequencies; from far away, low frequencies dominate.
-    I visualize FFT log-magnitudes to show how filtering redistributes energy. For the detailed example, I used Gaussian low-pass σ=6 (ksize=15) and high-pass σ=3 (ksize=11) through experimentation.
+    I visualize FFT log-magnitudes to show how filtering redistributes energy. Good alignment and sensible cutoffs make the illusion feel natural.
+  </p>
+  <div class="row center">
     <div class="cap"><h3>Derek + Nutmeg — pipeline</h3></div>
   </div>
   <div class="row center">
@@ -139,14 +169,6 @@
   <div class="two-big">
     <img src="./media/part2_4_custom_A.png" alt="custom blend A (large)">
     <img src="./media/part2_4_custom_B.png" alt="custom blend B (large)">
-  </div>
-
-  <!-- extra slot for one more custom blend -->
-  <div class="row center">
-    <div class="cap"><h3>Additional custom blend</h3><small>(optional third figure)</small></div>
-  </div>
-  <div class="row center">
-    <img class="wide-xl" src="./media/part2_4_custom_C.png" alt="custom blend C (large)">
   </div>
 
   <p class="back"><a href="../index.html">⬅ Back to main page</a></p>
