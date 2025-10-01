@@ -46,7 +46,7 @@
     I implemented convolution with four loops and two loops (zero padding), then compared against <code>scipy.signal.convolve2d</code>. Below is a summary collage showing the original,
     box-filtered output, and comparisons to SciPy. This validates correctness before building more complex filters.
   </p>
-  <p><em>Runtime note:</em> Finite-difference filters (e.g., 1×2 / 2×1) are much faster than a 9×9 box filter because they do O(1) work per pixel vs. ~81 operations per pixel.
+  <p><em>Runtime note:</em> Finite-difference filters (e.g., 1×2 / 2×1) are much faster than a 9×9 box filter because they do O(1) work per pixel.
      In practice, kernel size and separability dominate speed, so tiny stencils feel instant while big, dense kernels are noticeably slower.</p>
   <div class="row">
     <div class="cap">
