@@ -38,14 +38,16 @@
   <p>
     This project explores 2D convolution, edge detection, frequency filtering, hybrid images, and multi-resolution blending.
     I implement core filters from scratch, visualize Gaussian/Laplacian stacks, and blend images using smooth masks.
+    The goal is to connect simple pixel operations to the way structures appear across scales, and to show how small design choices (alignment, masks, cutoffs) change what we see.
   </p>
 
   <h2>Part 1.1: Convolutions from Scratch</h2>
   <p>
     I implemented convolution with four loops and two loops (zero padding), then compared against <code>scipy.signal.convolve2d</code>. Below is a summary collage showing the original,
-    box-filtered output, and comparisons to SciPy.
+    box-filtered output, and comparisons to SciPy. This validates correctness before building more complex filters.
   </p>
-  <p><em>Runtime note:</em> Finite-difference filters (e.g., 1×2 / 2×1) are much faster than a 9×9 box filter because they do O(1) work per pixel vs. ~81 operations per pixel.</p>
+  <p><em>Runtime note:</em> Finite-difference filters (e.g., 1×2 / 2×1) are much faster than a 9×9 box filter because they do O(1) work per pixel vs. ~81 operations per pixel.
+     In practice, kernel size and separability dominate speed, so tiny stencils feel instant while big, dense kernels are noticeably slower.</p>
   <div class="row">
     <div class="cap">
       <h3>Convolution summary</h3>
@@ -58,27 +60,33 @@
       <h3>Finite difference result</h3>
       <small>Dx/Dy responses and combined view</small>
     </div>
-    <img class="wide" src="./media/part1_1_finite_diff.png" alt="Part 1.1 finite difference output">
+    <img class="wide-xl" src="./media/part1_1_finite_diff.png" alt="Part 1.1 finite difference output">
   </div>
 
   <h2>Part 1.2: Finite Difference Operator</h2>
   <p>
     I convolved the image with D<sub>x</sub> and D<sub>y</sub>, computed gradient magnitude, and binarized it with a threshold to get an edge map.
-    The main trade-off is between removing noise and missing faint edges; I tuned a threshold to balance both.
+    The main trade-off is between removing noise and missing faint edges; I tuned a threshold to balance both. The final edges emphasize strong boundaries while keeping speckle low.
   </p>
   <div class="row"><div class="cap"><h3>Cameraman — Dx/Dy/Edges</h3></div><img src="./media/part1_2_edges.png" alt="part 1.2"></div>
+  <div class="row center">
+    <div class="cap"><h3>Gradients — Dx and Dy (large)</h3></div>
+  </div>
+  <div class="row center">
+    <img class="wide-xxl" src="./media/part1_2_gradients_big.png" alt="part 1.2 large gradients">
+  </div>
 
   <h2>Part 1.3: Derivative of Gaussian (DoG)</h2>
   <p>
     I first smoothed with a Gaussian, then took derivatives; I also built DoG filters by convolving the Gaussian with D<sub>x</sub>, D<sub>y</sub>.
-    The DoG result matches “blur→diff” but is cleaner and less noisy due to smoothing.
+    The DoG result matches “blur→diff” but is cleaner and less noisy due to smoothing. This shows how a little prefiltering stabilizes gradients without changing where edges truly are.
   </p>
   <div class="row"><div class="cap"><h3>DoG filters + results</h3></div><img class="wide-lg" src="./media/part1_3_summary.png" alt="part 1.3"></div>
 
   <h2>Part 2.1: Image Sharpening (Unsharp Mask)</h2>
   <p>
     I sharpen by adding a scaled high-frequency component: <code>sharp = img + a·(img − G*img)</code>. I show the blurred image, and sharpened outputs for different amounts.
-    I also blur a sharp image and try to recover it; sharpening boosts edges but cannot restore lost detail perfectly.
+    I also blur a sharp image and try to recover it; sharpening boosts edges but cannot restore lost detail perfectly. Higher <em>a</em> pops edges more but can create halos on high-contrast boundaries.
   </p>
   <div class="row"><div class="cap"><h3>Taj — blur/sharpened</h3></div><img class="wide-xl" src="./media/part2_1_taj.png" alt="part 2.1 taj"></div>
   <div class="row"><div class="cap"><h3>Custom — blur/sharpened</h3></div><img class="wide-xl" src="./media/part2_1_custom.png" alt="part 2.1 custom"></div>
@@ -86,16 +94,14 @@
   <h2>Part 2.2: Hybrid Images</h2>
   <p>
     I align pairs, low-pass one image and high-pass the other, then add. At close range you see high frequencies; from far away, low frequencies dominate.
-    I visualize FFT log-magnitudes to show how filtering redistributes energy.
+    I visualize FFT log-magnitudes to show how filtering redistributes energy. Good alignment and sensible cutoffs make the illusion feel natural.
   </p>
-
   <div class="row center">
     <div class="cap"><h3>Derek + Nutmeg — pipeline</h3></div>
   </div>
   <div class="row center">
     <img class="wide-xxl" src="./media/part2_2_dn_pipeline.png" alt="DN pipeline (large)">
   </div>
-
   <div class="row center">
     <div class="cap"><h3>Hybrid results</h3><small>Two examples shown large</small></div>
   </div>
@@ -107,7 +113,7 @@
   <h2>Part 2.3: Gaussian & Laplacian Stacks</h2>
   <p>
     I build stacks without downsampling: repeated Gaussian smoothing for the Gaussian stack and differences between levels for the Laplacian stack.
-    The Laplacian bands isolate structures from fine to coarse, matching Szelski Fig. 3.42 behavior.
+    The Laplacian bands isolate structures from fine to coarse, matching Szelski Fig. 3.42 behavior. These stacks are the backbone for smooth, multi-scale blends.
   </p>
   <div class="row center">
     <div class="cap"><h3>Apple/Orange — stacks and levels</h3></div>
@@ -125,11 +131,9 @@
   <h2>Part 2.4: Multiresolution Blending</h2>
   <p>
     I blur a mask into a Gaussian stack and combine the two images’ Laplacian stacks level-wise, then add the base level. This yields a smooth seam.
-    I show vertical, horizontal, and irregular (circular) masks, plus two creative blends.
+    I show vertical, horizontal, and irregular (circular) masks, plus two creative blends. The mask’s blur width controls how gentle the transition feels.
   </p>
   <div class="row"><div class="cap"><h3>Oraple blends (v/h/circle)</h3></div><img class="wide-xl" src="./media/part2_4_oraple_blends.png" alt="oraple blends"></div>
-
-  <!-- New: two-up layout for custom blends -->
   <div class="row center">
     <div class="cap"><h3>Custom blends</h3><small>Two examples shown large</small></div>
   </div>
@@ -137,11 +141,6 @@
     <img src="./media/part2_4_custom_A.png" alt="custom blend A (large)">
     <img src="./media/part2_4_custom_B.png" alt="custom blend B (large)">
   </div>
-
-  <h2>Most Important Lesson</h2>
-  <p>
-    Frequency-domain thinking makes many “visual tricks” straightforward: once you can isolate bands cleanly and combine them with masks across scales, alignment and masking choices matter more than any single filter.
-  </p>
 
   <p class="back"><a href="../index.html">⬅ Back to main page</a></p>
 </body>
