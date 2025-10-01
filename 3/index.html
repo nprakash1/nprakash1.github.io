@@ -94,9 +94,7 @@
   <h2>Part 2.2: Hybrid Images</h2>
   <p>
     I align pairs, low-pass one image and high-pass the other, then add. At close range you see high frequencies; from far away, low frequencies dominate.
-    I visualize FFT log-magnitudes to show how filtering redistributes energy. Good alignment and sensible cutoffs make the illusion feel natural.
-  </p>
-  <div class="row center">
+    I visualize FFT log-magnitudes to show how filtering redistributes energy. For the detailed example, I used Gaussian low-pass σ=6 (ksize=15) and high-pass σ=3 (ksize=11) through experimentation.
     <div class="cap"><h3>Derek + Nutmeg — pipeline</h3></div>
   </div>
   <div class="row center">
@@ -134,12 +132,21 @@
     I show vertical, horizontal, and irregular (circular) masks, plus two creative blends. The mask’s blur width controls how gentle the transition feels.
   </p>
   <div class="row"><div class="cap"><h3>Oraple blends (v/h/circle)</h3></div><img class="wide-xl" src="./media/part2_4_oraple_blends.png" alt="oraple blends"></div>
+
   <div class="row center">
     <div class="cap"><h3>Custom blends</h3><small>Two examples shown large</small></div>
   </div>
   <div class="two-big">
     <img src="./media/part2_4_custom_A.png" alt="custom blend A (large)">
     <img src="./media/part2_4_custom_B.png" alt="custom blend B (large)">
+  </div>
+
+  <!-- extra slot for one more custom blend -->
+  <div class="row center">
+    <div class="cap"><h3>Additional custom blend</h3><small>(optional third figure)</small></div>
+  </div>
+  <div class="row center">
+    <img class="wide-xl" src="./media/part2_4_custom_C.png" alt="custom blend C (large)">
   </div>
 
   <p class="back"><a href="../index.html">⬅ Back to main page</a></p>
