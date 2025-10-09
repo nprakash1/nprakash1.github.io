@@ -225,14 +225,12 @@ System rows (A·h=b):
   <!-- ====================== A.4 ====================== -->
   <h2>A.4 — Mosaic Blending</h2>
   <p>
-    After estimating homographies between images, I place all views on a common canvas via inverse warping.
-    For blending, each source image contributes two factors per pixel: an alpha coverage mask (1 where the warped image lands, 0 elsewhere)
-    and a smooth distance-to-edge weight that starts near 1 in the interior and decays to 0 at the borders.
-    I compute the weight in the source image as
-    \(w(x,y)=\frac{\min(\text{distance to left/right/top/bottom edges})}{\max(\cdot)}\),
-    then warp this scalar field using the same homography as the RGB channels.
-    On the canvas, I average overlapping pixels using these weights—images dominate near their centers, and seams fade out near the edges—producing a continuous mosaic.
-    For mosaics I used 8 point correspondences per pair to stabilize \(H\).
+    After estimating homographies between images, I warp each image into a shared canvas (inverse warping). To hide seams,
+    I don’t overwrite pixels; instead each image contributes a smooth weight that’s high near its center and tapers to zero
+    at the edges (computed by distance to the image borders). I warp this scalar weight with the same homography as the RGB
+    and multiply by an alpha mask that indicates where the warped image actually lands. Finally I average the colors using
+    these weights so regions where two images overlap blend smoothly rather than cutting sharply. For mosaics I used 8 point
+    correspondences per pair for added stability.
   </p>
 
   <div class="row">
