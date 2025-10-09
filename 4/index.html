@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Image Warping & Mosaicing — A.1–A.4</title>
+  <title>Image Warping & Mosaicing — A.1 to A.4</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{
@@ -52,8 +52,25 @@
       display:inline-block; text-decoration:none; color:#fff; background:var(--accent);
       padding:10px 16px; border-radius:10px; font-weight:700;
     }
-    a.button:hover{ background: var(--accent2); }
+    a.button:hover{ background:var(--accent2); }
+
+    pre{
+      background:#fafafa; border:1px solid #eee; padding:12px; border-radius:8px; overflow:auto;
+      font-size:.92rem; line-height:1.35;
+    }
   </style>
+
+  <!-- MathJax for LaTeX rendering in A.2/A.3 -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['\\(','\\)'], ['$', '$']],
+        displayMath: [['\\[','\\]'], ['$$','$$']]
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
@@ -69,13 +86,9 @@
 
   <!-- ====================== A.1 ====================== -->
   <h2>A.1 — Shoot the Pictures</h2>
-  <p>
-    I captured three sets of photographs by rotating the camera about a fixed center of projection so that
-    the transformations between them are projective (perspective). I maintained around 50% overlap between
-    the fields of view for easier registration later. The goal was to ensure static scenes, consistent lighting,
-    and enough texture detail for accurate feature correspondence.
-  </p>
+  <p>Each set below shows a pair of photos (JPGs only for A.1), captured by rotating about a fixed COP with 40–70% overlap.</p>
 
+  <!-- Set 1: pair (JPG) -->
   <h3>Set 1</h3>
   <div class="pair">
     <figure class="huge">
@@ -88,6 +101,7 @@
     </figure>
   </div>
 
+  <!-- Set 2: pair (JPG) -->
   <h3>Set 2</h3>
   <div class="pair">
     <figure class="huge">
@@ -100,6 +114,7 @@
     </figure>
   </div>
 
+  <!-- Set 3: pair (JPG) -->
   <h3>Set 3</h3>
   <div class="pair">
     <figure class="huge">
@@ -115,19 +130,20 @@
   <!-- ====================== A.2 ====================== -->
   <h2>A.2 — Recover Homographies</h2>
   <p>
-    For each image pair, I manually clicked four correspondences and solved the linear system \(A h = b\) using
-    least-squares estimation to obtain the homography \(H\). The homography maps homogeneous coordinates between
-    images, preserving straight lines. Below are example overlays and the computed matrices.
+    For each image pair, I manually clicked four correspondences and solved the linear system
+    \(A\,h=b\) in least squares to obtain the homography \(H\).
+    The homography maps homogeneous points between images and preserves straight lines.
+    Below are example overlays and the computed matrices.
   </p>
 
+  <!-- Pair 1 overlay + matrices -->
   <div class="row">
     <figure class="big">
-      <img src="./media/a2_pair1_points.png" alt="A.2 Pair 1 correspondences">
-      <figcaption>Pair 1 overlay with clicked correspondences and resulting homography system.</figcaption>
+      <img src="./media/a2_pair1_points.png" alt="A.2 Pair 1 correspondences (large)">
+      <figcaption>Pair 1 overlay (large).</figcaption>
     </figure>
   </div>
-
-  <pre style="white-space:pre-wrap; background:#fafafa; border:1px solid #eee; padding:12px; border-radius:8px; overflow:auto;">
+  <pre>
 H (im1→im2):
 [[ 4.25602000e-01 -8.63586000e-01  1.29503066e+03]
  [ 2.25027000e-01 -8.43065000e-01  2.00623841e+03]
@@ -139,31 +155,53 @@ v = (d x + e y + f) / (g x + h y + 1)
 
 System rows (A·h=b):
 [3085.46 2636.05 1  0 0 0  -1883.72*3085.46  -1883.72*2636.05] · [a,b,c,d,e,f,g,h]^T = 1883.72
-...
+[0 0 0  3085.46 2636.05 1  -2715.17*3085.46  -2715.17*2636.05] · [a,b,c,d,e,f,g,h]^T = 2715.17
+[4222.92 2665.72 1  0 0 0  -2981.61*4222.92  -2981.61*2665.72] · [a,b,c,d,e,f,g,h]^T = 2981.61
+[0 0 0  4222.92 2665.72 1  -2675.61*4222.92  -2675.61*2665.72] · [a,b,c,d,e,f,g,h]^T = 2675.61
+[2729.39 2458.01 1  0 0 0  -1527.65*2729.39  -1527.65*2458.01] · [a,b,c,d,e,f,g,h]^T = 1527.65
+[0 0 0  2729.39 2458.01 1  -2507.46*2729.39  -2507.46*2458.01] · [a,b,c,d,e,f,g,h]^T = 2507.46
+[3134.92 2428.34 1  0 0 0  -1992.52*3134.92  -1992.52*2428.34] · [a,b,c,d,e,f,g,h]^T = 1992.52
+[0 0 0  3134.92 2428.34 1  -2487.68*3134.92  -2487.68*2428.34] · [a,b,c,d,e,f,g,h]^T = 2487.68
   </pre>
 
+  <!-- Pair 2 overlay + matrices -->
   <div class="row">
     <figure class="big">
-      <img src="./media/a2_pair2_points.png" alt="A.2 Pair 2 correspondences">
-      <figcaption>Pair 2 overlay with clicked correspondences and resulting homography system.</figcaption>
+      <img src="./media/a2_pair2_points.png" alt="A.2 Pair 2 correspondences (large)">
+      <figcaption>Pair 2 overlay (large).</figcaption>
     </figure>
   </div>
-
-  <pre style="white-space:pre-wrap; background:#fafafa; border:1px solid #eee; padding:12px; border-radius:8px; overflow:auto;">
+  <pre>
 H (im1→im2):
 [[ 5.00149000e-01 -5.09250000e-02  1.95248538e+03]
  [-1.95654000e-01  7.77235000e-01  4.05135920e+02]
  [-8.60000000e-05 -1.00000000e-05  1.00000000e+00]]
+
+Model per point:
+u = (a x + b y + c) / (g x + h y + 1)
+v = (d x + e y + f) / (g x + h y + 1)
+
+System rows (A·h=b):
+[642.41 3397.65 1  0 0 0  -2309.03*642.41  -2309.03*3397.65] · [a,b,c,d,e,f,g,h]^T = 2309.03
+[0 0 0  642.41 3397.65 1  -3209.72*642.41  -3209.72*3397.65] · [a,b,c,d,e,f,g,h]^T = 3209.72
+[1483.14 1310.66 1  0 0 0  -3060.74*1483.14  -3060.74*1310.66] · [a,b,c,d,e,f,g,h]^T = 3060.74
+[0 0 0  1483.14 1310.66 1  -1320.55*1483.14  -1320.55*1310.66] · [a,b,c,d,e,f,g,h]^T = 1320.55
+[2333.75 1152.41 1  0 0 0  -3891.57*2333.75  -3891.57*1152.41] · [a,b,c,d,e,f,g,h]^T = 3891.57
+[0 0 0  2333.75 1152.41 1  -1073.28*2333.75  -1073.28*1152.41] · [a,b,c,d,e,f,g,h]^T = 1073.28
+[1552.37 4000.99 1  0 0 0  -3060.74*1552.37  -3060.74*4000.99] · [a,b,c,d,e,f,g,h]^T = 3060.74
+[0 0 0  1552.37 4000.99 1  -3892.19*1552.37  -3892.19*4000.99] · [a,b,c,d,e,f,g,h]^T = 3892.19
   </pre>
 
   <!-- ====================== A.3 ====================== -->
   <h2>A.3 — Warp & Rectify</h2>
   <p>
-    I implemented inverse warping with two interpolants from scratch. Given a destination pixel (u,v), I back-project
-    with H⁻¹ to a subpixel source location (xₛ,yₛ). Nearest neighbor rounds (xₛ,yₛ) to the closest integer pixel;
-    bilinear mixes the four neighbors using the fractional offsets. For rectification, I click four ordered corners on
-    a planar object and map them to a perfect W×H rectangle. Solving for H and inverse-warping into that canvas removes
-    the perspective skew, yielding a fronto-parallel view.
+    I implemented inverse warping with two interpolants from scratch. Given a destination pixel \((u,v)\),
+    I map it back with \(x_s \sim H^{-1}[u,v,1]^T\).
+    For nearest, I round \((x_s,y_s)\) to the closest source pixel; for bilinear, I linearly blend the four neighboring
+    source pixels using the fractional parts of \((x_s,y_s)\).
+    For rectification, I click the four corners of a planar object in the image (ordered consistently, e.g., TL→TR→BR→BL)
+    and map them to a perfect square \(\{(0,0),(W-1,0),(W-1,H-1),(0,H-1)\}\).
+    Solving for \(H\) and inverse-warping into a \(W \times H\) canvas removes the perspective skew, yielding a fronto-parallel, metric-aligned view.
   </p>
 
   <div class="pair">
@@ -187,12 +225,14 @@ H (im1→im2):
   <!-- ====================== A.4 ====================== -->
   <h2>A.4 — Mosaic Blending</h2>
   <p>
-    After estimating homographies between images, I warp each image into a shared canvas (inverse warping). To hide seams,
-    I don’t overwrite pixels; instead each image contributes a smooth weight that’s high near its center and tapers to zero
-    at the edges (computed by distance to the image borders). I warp this scalar weight with the same homography as the RGB
-    and multiply by an alpha mask that indicates where the warped image actually lands. Finally I average the colors using
-    these weights so regions where two images overlap blend smoothly rather than cutting sharply. For mosaics I used 8 point
-    correspondences per pair for added stability.
+    After estimating homographies between images, I place all views on a common canvas via inverse warping.
+    For blending, each source image contributes two factors per pixel: an alpha coverage mask (1 where the warped image lands, 0 elsewhere)
+    and a smooth distance-to-edge weight that starts near 1 in the interior and decays to 0 at the borders.
+    I compute the weight in the source image as
+    \(w(x,y)=\frac{\min(\text{distance to left/right/top/bottom edges})}{\max(\cdot)}\),
+    then warp this scalar field using the same homography as the RGB channels.
+    On the canvas, I average overlapping pixels using these weights—images dominate near their centers, and seams fade out near the edges—producing a continuous mosaic.
+    For mosaics I used 8 point correspondences per pair to stabilize \(H\).
   </p>
 
   <div class="row">
