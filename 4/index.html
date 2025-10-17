@@ -251,6 +251,88 @@ System rows (A·h=b):
       <figcaption>Mosaic 3</figcaption>
     </figure>
   </div>
+    <!-- ====================== B.1 ====================== -->
+  <h2>B.1 — Harris Corner Detection + ANMS</h2>
+  <p>
+    I detect interest points using a single-scale Harris corner detector (from <code>harris.py</code>), then prune them with
+    Adaptive Non-Maximal Suppression (ANMS, Sec. 3). Harris finds many candidates in textured regions; ANMS keeps
+    strong points that are also well-spaced by suppressing those too close to significantly stronger neighbors.
+    Below: chosen corners <em>after</em> ANMS overlaid on the image.
+  </p>
+  <figure class="big">
+    <img src="./media/b1_anms.png" alt="B.1 ANMS corners overlaid (big)">
+    <figcaption>ANMS-selected corners (overlay). <!-- add a second figure elsewhere if you also show raw Harris --></figcaption>
+  </figure>
+
+  <!-- ====================== B.2 ====================== -->
+  <h2>B.2 — Feature Descriptor Extraction</h2>
+  <p>
+    Around each ANMS point, I sample a <strong>40×40</strong> window, downsample it with area resampling to <strong>8×8</strong>, and apply
+    bias/gain normalization (zero mean, unit variance). These axis-aligned 64D intensity descriptors are simple but stable,
+    matching the spec (ignore rotation invariance and wavelets).
+  </p>
+  <figure class="big">
+    <img src="./media/b2_descriptors.png" alt="B.2 sample 8×8 descriptors (big)">
+    <figcaption>Sample normalized 8×8 descriptors visualized as tiles.</figcaption>
+  </figure>
+
+  <!-- ====================== B.3 ====================== -->
+  <h2>B.3 — Feature Matching (Lowe Ratio)</h2>
+  <p>
+    I compute all-pairs SSD between descriptors from two images and, per feature in A, take the two nearest neighbors in B.
+    A match is accepted if <em>best/second</em> &lt; <code>ratio</code> (Lowe’s test; I used 0.7–0.8). This filters ambiguous matches and
+    keeps distinctive correspondences.
+  </p>
+  <figure class="big">
+    <img src="./media/b3_matches.png" alt="B.3 matched correspondences (big)">
+    <figcaption>Accepted matches drawn across concatenated images.</figcaption>
+  </figure>
+
+  <!-- ====================== B.4 ====================== -->
+  <h2>B.4 — 4-Point RANSAC Homography &amp; Automatic Mosaics</h2>
+  <p>
+    From the candidate matches, I run 4-point RANSAC to estimate a robust homography: sample 4 pairs, fit H, count inliers
+    under an SSD reprojection threshold, and keep the H with the most inliers. Using the best H, I adapt my Part-A inverse-warping
+    + feather-blending code to produce automatic mosaics. Below, each pair shows the existing <strong>manual</strong> mosaic (left) and a
+    slot for the corresponding <strong>automatic</strong> mosaic (right).
+  </p>
+
+  <!-- Pair 1: manual vs automatic -->
+  <div class="pair">
+    <figure class="big">
+      <img src="./media/a4_mosaic1.png" alt="A.4 manual mosaic 1 (big)">
+      <figcaption>Manual mosaic 1 (from Part A).</figcaption>
+    </figure>
+    <figure class="big">
+      <img src="./media/b4_mosaic1_auto.png" alt="B.4 automatic mosaic 1 (big)">
+      <figcaption>Automatic mosaic 1 (RANSAC + auto matches).</figcaption>
+    </figure>
+  </div>
+
+  <!-- Pair 2: manual vs automatic -->
+  <div class="pair">
+    <figure class="big">
+      <img src="./media/a4_mosaic2.png" alt="A.4 manual mosaic 2 (big)">
+      <figcaption>Manual mosaic 2 (from Part A).</figcaption>
+    </figure>
+    <figure class="big">
+      <img src="./media/b4_mosaic2_auto.png" alt="B.4 automatic mosaic 2 (big)">
+      <figcaption>Automatic mosaic 2 (RANSAC + auto matches).</figcaption>
+    </figure>
+  </div>
+
+  <!-- Pair 3: manual vs automatic -->
+  <div class="pair">
+    <figure class="big">
+      <img src="./media/a4_mosaic3.png" alt="A.4 manual mosaic 3 (big)">
+      <figcaption>Manual mosaic 3 (from Part A).</figcaption>
+    </figure>
+    <figure class="big">
+      <img src="./media/b4_mosaic3_auto.png" alt="B.4 automatic mosaic 3 (big)">
+      <figcaption>Automatic mosaic 3 (RANSAC + auto matches).</figcaption>
+    </figure>
+  </div>
+
 
   <div class="footer">
     <a class="button" href="../index.html">⬅ Back to main page</a>
