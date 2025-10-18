@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Image Warping & Mosaicing — A.1 to A.4</title>
+  <title>Image Warping & Mosaicing</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{
@@ -60,7 +60,6 @@
     }
   </style>
 
-  <!-- MathJax for LaTeX rendering in A.2/A.3 -->
   <script>
     MathJax = {
       tex: {
@@ -74,14 +73,19 @@
 </head>
 <body>
 
-  <h1>Image Warping & Mosaicing — A.1 to A.4</h1>
+  <h1>Image Warping & Mosaicing</h1>
 
   <h2>Overview</h2>
   <p>
-    Pipeline: <span class="pill">A.1</span> capture projectively related images (rotate in place),
+    Pipeline:
+    <span class="pill">A.1</span> capture projectively related images (rotate in place),
     <span class="pill">A.2</span> estimate homographies from correspondences,
     <span class="pill">A.3</span> inverse warp with nearest &amp; bilinear (plus rectification),
-    <span class="pill">A.4</span> feather-blend into mosaics.
+    <span class="pill">A.4</span> feather-blend into mosaics;
+    <span class="pill">B.1</span> Harris corner detection + ANMS,
+    <span class="pill">B.2</span> 40×40 → 8×8 normalized descriptors,
+    <span class="pill">B.3</span> Lowe-ratio feature matching,
+    <span class="pill">B.4</span> 4-point RANSAC homography &amp; automatic mosaics.
   </p>
 
   <!-- ====================== A.1 ====================== -->
@@ -251,7 +255,8 @@ System rows (A·h=b):
       <figcaption>Mosaic 3</figcaption>
     </figure>
   </div>
-    <!-- ====================== B.1 ====================== -->
+
+  <!-- ====================== B.1 ====================== -->
   <h2>B.1 — Harris Corner Detection + ANMS</h2>
   <p>
     I detect interest points using a single-scale Harris corner detector (from <code>harris.py</code>), then prune them with
@@ -261,7 +266,7 @@ System rows (A·h=b):
   </p>
   <figure class="big">
     <img src="./media/b1_anms.png" alt="B.1 ANMS corners overlaid (big)">
-    <figcaption>ANMS-selected corners (overlay). <!-- add a second figure elsewhere if you also show raw Harris --></figcaption>
+    <figcaption>ANMS-selected corners (overlay).</figcaption>
   </figure>
 
   <!-- ====================== B.2 ====================== -->
@@ -297,7 +302,6 @@ System rows (A·h=b):
     slot for the corresponding <strong>automatic</strong> mosaic (right).
   </p>
 
-  <!-- Pair 1: manual vs automatic -->
   <div class="pair">
     <figure class="big">
       <img src="./media/a4_mosaic1.png" alt="A.4 manual mosaic 1 (big)">
@@ -309,7 +313,6 @@ System rows (A·h=b):
     </figure>
   </div>
 
-  <!-- Pair 2: manual vs automatic -->
   <div class="pair">
     <figure class="big">
       <img src="./media/a4_mosaic2.png" alt="A.4 manual mosaic 2 (big)">
@@ -321,7 +324,6 @@ System rows (A·h=b):
     </figure>
   </div>
 
-  <!-- Pair 3: manual vs automatic -->
   <div class="pair">
     <figure class="big">
       <img src="./media/a4_mosaic3.png" alt="A.4 manual mosaic 3 (big)">
@@ -332,7 +334,6 @@ System rows (A·h=b):
       <figcaption>Automatic mosaic 3 (RANSAC + auto matches).</figcaption>
     </figure>
   </div>
-
 
   <div class="footer">
     <a class="button" href="../index.html">⬅ Back to main page</a>
