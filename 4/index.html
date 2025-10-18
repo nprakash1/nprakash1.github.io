@@ -140,7 +140,6 @@
     Below are example overlays and the computed matrices.
   </p>
 
-  <!-- Pair 1 overlay + matrices -->
   <div class="row">
     <figure class="big">
       <img src="./media/a2_pair1_points.png" alt="A.2 Pair 1 correspondences (large)">
@@ -152,23 +151,8 @@ H (im1→im2):
 [[ 4.25602000e-01 -8.63586000e-01  1.29503066e+03]
  [ 2.25027000e-01 -8.43065000e-01  2.00623841e+03]
  [ 8.90000000e-05 -4.17000000e-04  1.00000000e+00]]
-
-Model per point:
-u = (a x + b y + c) / (g x + h y + 1)
-v = (d x + e y + f) / (g x + h y + 1)
-
-System rows (A·h=b):
-[3085.46 2636.05 1  0 0 0  -1883.72*3085.46  -1883.72*2636.05] · [a,b,c,d,e,f,g,h]^T = 1883.72
-[0 0 0  3085.46 2636.05 1  -2715.17*3085.46  -2715.17*2636.05] · [a,b,c,d,e,f,g,h]^T = 2715.17
-[4222.92 2665.72 1  0 0 0  -2981.61*4222.92  -2981.61*2665.72] · [a,b,c,d,e,f,g,h]^T = 2981.61
-[0 0 0  4222.92 2665.72 1  -2675.61*4222.92  -2675.61*2665.72] · [a,b,c,d,e,f,g,h]^T = 2675.61
-[2729.39 2458.01 1  0 0 0  -1527.65*2729.39  -1527.65*2458.01] · [a,b,c,d,e,f,g,h]^T = 1527.65
-[0 0 0  2729.39 2458.01 1  -2507.46*2729.39  -2507.46*2458.01] · [a,b,c,d,e,f,g,h]^T = 2507.46
-[3134.92 2428.34 1  0 0 0  -1992.52*3134.92  -1992.52*2428.34] · [a,b,c,d,e,f,g,h]^T = 1992.52
-[0 0 0  3134.92 2428.34 1  -2487.68*3134.92  -2487.68*2428.34] · [a,b,c,d,e,f,g,h]^T = 2487.68
   </pre>
 
-  <!-- Pair 2 overlay + matrices -->
   <div class="row">
     <figure class="big">
       <img src="./media/a2_pair2_points.png" alt="A.2 Pair 2 correspondences (large)">
@@ -180,34 +164,10 @@ H (im1→im2):
 [[ 5.00149000e-01 -5.09250000e-02  1.95248538e+03]
  [-1.95654000e-01  7.77235000e-01  4.05135920e+02]
  [-8.60000000e-05 -1.00000000e-05  1.00000000e+00]]
-
-Model per point:
-u = (a x + b y + c) / (g x + h y + 1)
-v = (d x + e y + f) / (g x + h y + 1)
-
-System rows (A·h=b):
-[642.41 3397.65 1  0 0 0  -2309.03*642.41  -2309.03*3397.65] · [a,b,c,d,e,f,g,h]^T = 2309.03
-[0 0 0  642.41 3397.65 1  -3209.72*642.41  -3209.72*3397.65] · [a,b,c,d,e,f,g,h]^T = 3209.72
-[1483.14 1310.66 1  0 0 0  -3060.74*1483.14  -3060.74*1310.66] · [a,b,c,d,e,f,g,h]^T = 3060.74
-[0 0 0  1483.14 1310.66 1  -1320.55*1483.14  -1320.55*1310.66] · [a,b,c,d,e,f,g,h]^T = 1320.55
-[2333.75 1152.41 1  0 0 0  -3891.57*2333.75  -3891.57*1152.41] · [a,b,c,d,e,f,g,h]^T = 3891.57
-[0 0 0  2333.75 1152.41 1  -1073.28*2333.75  -1073.28*1152.41] · [a,b,c,d,e,f,g,h]^T = 1073.28
-[1552.37 4000.99 1  0 0 0  -3060.74*1552.37  -3060.74*4000.99] · [a,b,c,d,e,f,g,h]^T = 3060.74
-[0 0 0  1552.37 4000.99 1  -3892.19*1552.37  -3892.19*4000.99] · [a,b,c,d,e,f,g,h]^T = 3892.19
   </pre>
 
   <!-- ====================== A.3 ====================== -->
   <h2>A.3 — Warp & Rectify</h2>
-  <p>
-    I implemented inverse warping with two interpolants from scratch. Given a destination pixel \((u,v)\),
-    I map it back with \(x_s \sim H^{-1}[u,v,1]^T\).
-    For nearest, I round \((x_s,y_s)\) to the closest source pixel; for bilinear, I linearly blend the four neighboring
-    source pixels using the fractional parts of \((x_s,y_s)\).
-    For rectification, I click the four corners of a planar object in the image (ordered consistently, e.g., TL→TR→BR→BL)
-    and map them to a perfect square \(\{(0,0),(W-1,0),(W-1,H-1),(0,H-1)\}\).
-    Solving for \(H\) and inverse-warping into a \(W \times H\) canvas removes the perspective skew, yielding a fronto-parallel, metric-aligned view.
-  </p>
-
   <div class="pair">
     <figure class="big">
       <img src="./media/a3_before_left.jpg" alt="A.3 before left">
@@ -228,15 +188,6 @@ System rows (A·h=b):
 
   <!-- ====================== A.4 ====================== -->
   <h2>A.4 — Mosaic Blending</h2>
-  <p>
-    After estimating homographies between images, I warp each image into a shared canvas (inverse warping). To hide seams,
-    I don’t overwrite pixels; instead each image contributes a smooth weight that’s high near its center and tapers to zero
-    at the edges (computed by distance to the image borders). I warp this scalar weight with the same homography as the RGB
-    and multiply by an alpha mask that indicates where the warped image actually lands. Finally I average the colors using
-    these weights so regions where two images overlap blend smoothly rather than cutting sharply. For mosaics I used 8 point
-    correspondences per pair for added stability.
-  </p>
-
   <div class="row">
     <figure class="big">
       <img src="./media/a4_mosaic1.png" alt="Mosaic 1">
@@ -260,10 +211,16 @@ System rows (A·h=b):
   <h2>B.1 — Harris Corner Detection + ANMS</h2>
   <p>
     I detect interest points using a single-scale Harris corner detector (from <code>harris.py</code>), then prune them with
-    Adaptive Non-Maximal Suppression (ANMS, Sec. 3). Harris finds many candidates in textured regions; ANMS keeps
-    strong points that are also well-spaced by suppressing those too close to significantly stronger neighbors.
-    Below: chosen corners <em>after</em> ANMS overlaid on the image.
+    Adaptive Non-Maximal Suppression (ANMS). Harris finds many candidates in textured regions; ANMS keeps strong points that
+    are also well-spaced by suppressing those too close to significantly stronger neighbors. Below: before/after ANMS.
   </p>
+
+  <!-- New "before ANMS" slot you asked for: save as ./media/b1_harris_raw.png -->
+  <figure class="big">
+    <img src="./media/b1_harris_raw.png" alt="B.1 raw Harris corners (no ANMS)">
+    <figcaption>Raw Harris corners (no ANMS).</figcaption>
+  </figure>
+
   <figure class="big">
     <img src="./media/b1_anms.png" alt="B.1 ANMS corners overlaid (big)">
     <figcaption>ANMS-selected corners (overlay).</figcaption>
@@ -273,8 +230,7 @@ System rows (A·h=b):
   <h2>B.2 — Feature Descriptor Extraction</h2>
   <p>
     Around each ANMS point, I sample a <strong>40×40</strong> window, downsample it with area resampling to <strong>8×8</strong>, and apply
-    bias/gain normalization (zero mean, unit variance). These axis-aligned 64D intensity descriptors are simple but stable,
-    matching the spec (ignore rotation invariance and wavelets).
+    bias/gain normalization (zero mean, unit variance).
   </p>
   <figure class="big">
     <img src="./media/b2_descriptors.png" alt="B.2 sample 8×8 descriptors (big)">
@@ -284,9 +240,7 @@ System rows (A·h=b):
   <!-- ====================== B.3 ====================== -->
   <h2>B.3 — Feature Matching (Lowe Ratio)</h2>
   <p>
-    I compute all-pairs SSD between descriptors from two images and, per feature in A, take the two nearest neighbors in B.
-    A match is accepted if <em>best/second</em> &lt; <code>ratio</code> (Lowe’s test; I used 0.7–0.8). This filters ambiguous matches and
-    keeps distinctive correspondences.
+    I compute all-pairs SSD between descriptors and accept a match if <em>best/second</em> &lt; ratio (Lowe test).
   </p>
   <figure class="big">
     <img src="./media/b3_matches.png" alt="B.3 matched correspondences (big)">
@@ -296,10 +250,8 @@ System rows (A·h=b):
   <!-- ====================== B.4 ====================== -->
   <h2>B.4 — 4-Point RANSAC Homography &amp; Automatic Mosaics</h2>
   <p>
-    From the candidate matches, I run 4-point RANSAC to estimate a robust homography: sample 4 pairs, fit H, count inliers
-    under an SSD reprojection threshold, and keep the H with the most inliers. Using the best H, I adapt my Part-A inverse-warping
-    + feather-blending code to produce automatic mosaics. Below, each pair shows the existing <strong>manual</strong> mosaic (left) and a
-    slot for the corresponding <strong>automatic</strong> mosaic (right).
+    I run 4-point RANSAC over matches to estimate a robust homography, then adapt Part-A inverse warping + feather blending
+    to produce automatic mosaics. Each pair shows the existing manual mosaic and the corresponding automatic one.
   </p>
 
   <div class="pair">
