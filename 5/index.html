@@ -115,9 +115,8 @@ Visualizing these poses in Viser confirmed a clean orbit around the object.
 <h2>Part 1 — Neural Field on a 2D Image</h2>
 
 <h3>1.1 Training on a Provided Image</h3>
-<p> For the provided image, I trained a coordinate-based neural field implemented as an MLP that maps normalized 
-(x,y) pixel coordinates to RGB values. I used positional encoding with L=10 frequencies, expanding the 2-D input to a 42-D feature vector, which allows the model to capture high-frequency image details. The network consists of 8 layers with 256 units each, ReLU activations, and a skip connection halfway through to preserve the raw coordinate information. 
-A final Sigmoid layer constrains outputs to valid color values. Early iterations produce blurry approximations, but the reconstruction sharpens as high-frequency components are learned.
+<p> For the provided image, I trained a coordinate-based neural field implemented as an MLP that maps normalized (x, y) pixel coordinates directly to RGB values. I used sinusoidal positional encoding with L=10, which takes the 2 input coordinates and expands them into a 42-dimensional vector by concatenating the raw (x, y) values with 20 sine features and 20 cosine features. This encoded vector is fed into a 4-layer MLP consisting of three hidden layers of width 256 with ReLU activations, followed by a final linear layer that outputs 3 values and a Sigmoid to keep colors in the range [0, 1]. 
+  The model was optimized using Adam with a learning rate of 1e-2 for 2000 iterations while randomly sampling 10k pixels per step. 
 </p>
 
 <figure class="big">
@@ -215,7 +214,10 @@ This structure allows modeling geometry, occlusions, and specularities.
 
 <h3>2.5 Volume Rendering & Training Results</h3>
 <p>
-I implemented the volume-rendering equation using accumulated transmittance and weighted color integration.
+I implemented the volume-rendering function by taking the density and color predicted at each sampled point on a ray and turning them into a probability that the ray “stops” at that point.
+For every sample, the algorithm first computes how much light from earlier samples is still passing through, which is called the transmittance.
+Then it computes how much that specific sample should contribute, based on its density (how solid it is) and its predicted color.
+The final pixel color is the sum of all these contributions, where closer, denser samples naturally block out the ones behind them.
 The model was trained on the Lego dataset, and the figures below show the training progression,
 validation PSNR curve, and the final spherical render from the test camera path.
 </p>
