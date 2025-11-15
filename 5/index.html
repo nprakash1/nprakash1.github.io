@@ -176,9 +176,10 @@ It increases smoothly as the network learns high-frequency structure and stabili
 
 <h3>2.1 & 2.2 Rays and Sampling</h3>
 <p>
-I implemented pixel-to-camera conversion, camera-to-world transformation, and ray construction.
-Each pixel defines a ray, and each ray is discretized into 3D sample points between near/far bounds.
-Stratified perturbation ensures robust coverage of the 3D space and prevents overfitting to fixed sample depths.
+To generate training rays, I implemented three key functions: pixel_to_camera, transform(c2w, x_c), and pixel_to_ray.
+pixel_to_camera inverts the pinhole projection by unprojecting each pixel (u,v) into a 3D direction in camera space using the intrinsics 
+K.transform(c2w, x_c) then maps these points into world coordinates using the camera-to-world matrix. With these pieces, pixel_to_ray creates each ray by extracting the camera origin from c2w and normalizing the world-space direction of the unprojected point.
+Finally, I apply stratified sampling along each ray to generate perturbed depth samples, ensuring smooth coverage of the scene and preventing overfitting to fixed sample depths.
 </p>
 
 <h3>2.3 Visualization of Cameras, Rays, and Samples</h3>
