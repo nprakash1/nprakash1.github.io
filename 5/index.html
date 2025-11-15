@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Neural Radiance Field</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --ink:#222; --muted:#555; --bg:#fdfdfd; --card:#ffffff;
+      --accent:#007acc; --accent2:#005fa3; --soft:#eaf5ff; --rule:#d9e8f7;
+    }
+    *{box-sizing:border-box;}
+    body{
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 28px;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    h1{
+      text-align:center;
+      font-size: 2.4rem;
+      margin-bottom: 20px;
+      color: var(--accent2);
+    }
+    h2{
+      margin-top: 42px;
+      font-size: 1.75rem;
+      border-left: 8px solid var(--accent);
+      padding: 8px 12px;
+      background: linear-gradient(to right, var(--soft), var(--card));
+      border-radius: 6px;
+      color: var(--accent2);
+    }
+    h3{
+      margin-top: 22px;
+      font-size: 1.35rem;
+      color: var(--accent2);
+    }
+    p{
+      margin: 10px 0 14px;
+    }
+    figure{
+      background: var(--card);
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--rule);
+      box-shadow: 2px 3px 10px rgba(0,0,0,0.08);
+      margin: 18px 0;
+    }
+    img{
+      width:100%;
+      height:auto;
+      border-radius:8px;
+    }
+    figcaption{
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    .big{ max-width: 900px; margin:auto; }
+  </style>
+</head>
+
+<body>
+
+<h1>Neural Radiance Field</h1>
+
+<!-- ========================================================= -->
+<!-- ======================= OVERVIEW ======================== -->
+<!-- ========================================================= -->
+<h2>Overview</h2>
+<p>
+This project explores Neural Radiance Fields (NeRFs) through several stages: camera calibration, 2D neural fields, multi-view 3D reconstruction, and training NeRFs on self-captured datasets. 
+We begin with calibrating a camera using ArUco markers, fitting a neural field to a single image, and then scaling the system to full 3D for the Lego dataset. 
+Each part builds on the last, moving from simple coordinate-to-color mappings to full volumetric rendering with ray sampling. 
+Finally, we capture and train a NeRF on a real physical object, producing novel view synthesis results. 
+The entire pipeline demonstrates how coordinate-based networks can learn continuous representations of images and 3D scenes. 
+</p>
+
+
+<!-- ========================================================= -->
+<!-- ========================= PART 0 ========================= -->
+<!-- ========================================================= -->
+<h2>Part 0 — Camera Calibration & 3D Capture</h2>
+
+<h3>0.1 Calibrating the Camera</h3>
+<p>
+I captured a set of calibration images using a printed ArUco board and detected the markers using OpenCV’s built-in 4×4 dictionary. 
+Each detection yields four precise 2D corner locations, which are paired with their known 3D coordinates. 
+Feeding these into <code>cv2.calibrateCamera</code> computes the focal length, principal point, and distortion coefficients. 
+This calibration step ensures all later NeRF computations assume a correct pinhole model. 
+The intrinsics from this part are used for all pose estimation and ray construction.
+</p>
+
+<h3>0.2 Capturing Object Scan</h3>
+<p>
+I photographed my chosen object from ~30–50 viewpoints, keeping the ArUco tag in view for pose reference. 
+I maintained consistent zoom and avoided lighting/exposure changes to ensure stable NeRF training later. 
+Each image is undistorted using the intrinsics from Part 0.1. 
+The resulting dataset provides multi-view constraints necessary for learning a coherent 3D radiance field.
+</p>
+
+<h3>0.3 Estimating Camera Pose</h3>
+<p>
+For each object image, I detected the tag and recovered the camera pose using <code>cv2.solvePnP</code>. 
+The method returns a rotation and translation describing the camera’s position relative to the tag. 
+I invert this transformation to obtain camera-to-world matrices compatible with NeRF. 
+Visualizing these poses in Viser confirmed that the camera trajectory forms a clean orbit around the object. 
+Below are two screenshots of the frustum visualization.
+</p>
+
+<figure class="big">
+  <img src="media/part0_3_viser_view1.png" alt="">
+  <figcaption>Camera frustums visualization — View 1</figcaption>
+</figure>
+
+<figure class="big">
+  <img src="media/part0_3_viser_view2.png" alt="">
+  <figcaption>Camera frustums visualization — View 2</figcaption>
+</figure>
+
+
+<!-- ========================================================= -->
+<!-- ========================= PART 1 ========================= -->
+<!-- ========================================================= -->
+<h2>Part 1 — Fitting a Neural Field to a 2D Image</h2>
+
+<h3>1.1 Training on a Provided Image</h3>
+<p>
+Here, I implemented a coordinate-based neural field using positional encoding and a multilayer perceptron. 
+The model maps 2D pixel coordinates to RGB values and is optimized with MSE and Adam. 
+Training progressively sharpens the reconstruction as the positional encoding allows the network to represent high-frequency details. 
+Below is the training progression on the provided test image.
+</p>
+
+<figure class="big">
+  <img src="media/part1_test_progression.png" alt="">
+  <figcaption>Training progression on provided image.</figcaption>
+</figure>
+
+<h3>1.2 Training on My Own Image</h3>
+<p>
+I repeated the same pipeline using my own custom image. 
+The model successfully learned the full color field over iterations. 
+The reconstruction quality similarly improved with more iterations and higher-frequency encodings.
+</p>
+
+<figure class="big">
+  <img src="media/part1_mine_progression.png" alt="">
+  <figcaption>Training progression on my own image.</figcaption>
+</figure>
+
+<h3>1.3 Hyperparameter Study (Frequency × Width)</h3>
+<p>
+I varied the maximum positional encoding frequency and the MLP width to study their effects. 
+Higher frequencies allow sharper edges but require greater model capacity. 
+Wider networks learn faster and achieve higher peak PSNR on complex textures. 
+Below is a 2×2 grid showing four final reconstructions.
+</p>
+
+<figure class="big">
+  <img src="media/part1_hyperparam_grid.png" alt="">
+  <figcaption>Grid of final results for different hyperparameters.</figcaption>
+</figure>
+
+
+<!-- ========================================================= -->
+<!-- ========================= PART 2 ========================= -->
+<!-- ========================================================= -->
+<h2>Part 2 — Training a Neural Radiance Field (Lego)</h2>
+
+<h3>2.1 & 2.2 Rays and Sampling</h3>
+<p>
+I implemented pixel-to-camera projection, camera-to-world transformation, and ray construction for every pixel. 
+Each ray is sampled with stratified depth intervals between near and far bounds. 
+These samples form the 3D query locations for the NeRF MLP. 
+The pipeline allows random sampling of rays across all training images each iteration.
+</p>
+
+<h3>2.3 Rays, Cameras, and Sample Visualization</h3>
+<p>
+To verify the correctness of ray origins and directions, I visualized the training cameras, 3D rays, and sampled points using Viser. 
+This helped ensure rays originate at each camera position and travel inside the camera frustum. 
+Below are two visualizations showing rays and samples.
+</p>
+
+<figure class="big">
+  <img src="media/part2_3_rays_view1.png" alt="">
+  <figcaption>Visualization of cameras and sampled rays — View 1</figcaption>
+</figure>
+
+<figure class="big">
+  <img src="media/part2_3_rays_view2.png" alt="">
+  <figcaption>Visualization of cameras and sampled rays — View 2</figcaption>
+</figcaption>
+</figure>
+
+<h3>2.4 NeRF Architecture</h3>
+<p>
+The NeRF network uses positional encoding for both coordinates and view directions. 
+Its architecture contains a deep MLP with skip connections and separate density/color output branches. 
+Density is predicted from geometry-encoded coordinates, while color also depends on encoded view directions. 
+This structure enables NeRF to learn view-dependent appearance and sharp geometry boundaries.
+</p>
+
+<figure class="big">
+  <img src="media/part2_4_architecture.png" alt="">
+  <figcaption>NeRF architecture diagram.</figcaption>
+</figure>
+
+<h3>2.5 Volume Rendering & Training Results</h3>
+<p>
+I implemented the volume rendering integral using accumulated transmittance and per-sample densities. 
+This converts the MLP’s predictions into final pixel colors. 
+Below are training progress images, the validation PSNR curve, and the spherical rendering of the Lego.
+</p>
+
+<figure class="big">
+  <img src="media/part2_5_training_progression.png" alt="">
+  <figcaption>Training progression for Lego NeRF.</figcaption>
+</figure>
+
+<figure class="big">
+  <img src="media/part2_5_psnr_curve.png" alt="">
+  <figcaption>Validation PSNR curve.</figcaption>
+</figure>
+
+<figure class="big">
+  <img src="media/part2_5_lego_spherical.gif" alt="">
+  <figcaption>Spherical rendering of Lego.</figcaption>
+</figure>
+
+
+<!-- ========================================================= -->
+<!-- ========================= PART 2.6 ======================== -->
+<!-- ========================================================= -->
+<h2>Part 2.6 — NeRF on My Own Captured Object</h2>
+
+<h3>My Object</h3>
+<p>Here is the object I photographed and used for NeRF reconstruction.</p>
+
+<figure class="big">
+  <img src="media/part2_6_myobject_reference.png" alt="">
+  <figcaption>Reference image of my object.</figcaption>
+</figure>
+
+<h3>Training & Results</h3>
+<p>
+I trained the full NeRF pipeline on my own dataset using custom near/far bounds and increased samples per ray. 
+Some hyperparameters required adjustment due to variation in real-world lighting and scale. 
+Below is the training loss curve, an intermediate render, and the final novel-view GIF.
+</p>
+
+<figure class="big">
+  <img src="media/part2_6_loss_curve.png" alt="">
+  <figcaption>Training loss over iterations.</figcaption>
+</figure>
+
+<figure class="big">
+  <img src="media/part2_6_intermediate.png" alt="">
+  <figcaption>Intermediate render during training.</figcaption>
+</figure>
+
+<figure class="big">
+  <img src="media/part2_6_object_novelview.gif" alt="">
+  <figcaption>Final novel-view GIF of my real object.</figcaption>
+</figure>
+
+</body>
+</html>
